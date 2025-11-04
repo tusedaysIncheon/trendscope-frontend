@@ -14,7 +14,8 @@ export const SignUpSchema = z
     nickname: z
       .string()
       .max(10, "열 자 이하로 작성해주세요.")
-      .min(1, "닉네임은 필수입니다."),
+      .min(2, "닉네임은 필수입니다.")
+      .regex(/^[가-힣a-zA-Z0-9._-]+$/, "닉네임은 한글/영문/숫자/._-만 허용합니다."),
     password: z
       .string()
       .min(8, "8자 이상 입력해주세요.")

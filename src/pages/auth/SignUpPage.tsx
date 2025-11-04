@@ -1,3 +1,4 @@
+import { SocialLoginSection } from "@/components/layout/SocialLoginSection";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -7,29 +8,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { SocialLoginSection } from "@/components/layout/SocialLoginSection";
 import { Input } from "@/components/ui/input";
+import { useRegiForm } from "@/hooks/useRegiForm";
 import { useSignUpForm } from "@/hooks/useSignUpForm";
-import { signUpApi } from "@/lib/api/UserApi";
-import type { UserRequestDTO } from "@/types/user";
-import { toast } from "sonner";
 
 export default function SignUpPage() {
   const form = useSignUpForm();
-
-  const onSubmit = async (data: UserRequestDTO) => {
-    try {
-      const result = await signUpApi(data);
-      toast.success(`${result.nickname}님 회원가입을 축하드립니다! 🎉`, {
-        description: "이제 로그인하고 투표하러 갈까요? 🗳️",
-      });
-      form.reset();
-    } catch (error) {
-      toast.error("회원가입 실패 😢", {
-        description: "입력 정보를 다시 확인해주세요.",
-      });
-    }
-  };
+  const { onSubmit, handleBlurUsername } = useRegiForm(form);
 
   return (
     <section className="flex flex-col items-center justify-start h-screen bg-background text-foreground p-8">
@@ -38,7 +23,7 @@ export default function SignUpPage() {
       <p className="pt-6 text-muted-foreground">
         회원가입하고 Vote 서비스를 이용해보세요
       </p>
-     
+
       <SocialLoginSection />
 
       {/* 회원가입 폼 */}
@@ -56,7 +41,13 @@ export default function SignUpPage() {
               <FormItem>
                 <FormLabel>아이디</FormLabel>
                 <FormControl>
-                  <Input placeholder="아이디를 입력하세요" {...field} />
+                  <Input
+                    placeholder="아이디를 입력하세요"
+                    {...field}
+                    onBlur={(e) => {
+                      handleBlurUsername(e.target.value);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -132,7 +123,10 @@ export default function SignUpPage() {
           />
 
           {/* 제출 버튼 */}
-          <Button type="submit" className="w-full mt-2 active:scale-95 active:brightness-90 transition-transform duration-100">
+          <Button
+            type="submit"
+            className="w-full mt-2 active:scale-95 active:brightness-90 transition-transform duration-100"
+          >
             회원가입
           </Button>
         </form>

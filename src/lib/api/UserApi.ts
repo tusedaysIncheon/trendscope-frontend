@@ -29,3 +29,32 @@ export async function signUpApi(userData: UserRequestDTO): Promise<UserResponseD
     }
     
 }
+// 중복 검사 API 호출
+export async function existUserApi(username: string): Promise<boolean> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/v1/user/exist`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username }),
+    });
+
+    if (!response.ok) throw new Error("아이디 중복 검사 실패");
+
+    const result = await response.json();
+
+    if (typeof result === "boolean") {
+      return result;
+    }
+
+    if (result && typeof result.exist === "boolean") {
+      return result.exist;
+    }
+
+    throw new Error("아이디 중복 검사 응답 형식을 확인해주세요.");
+  } catch (error) {
+    console.error("아이디 중복 검사 중 오류 발생:", error);
+    throw error;
+  }
+}

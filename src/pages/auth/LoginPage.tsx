@@ -1,8 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
-const BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
-
 function LoginPage() {
 
 

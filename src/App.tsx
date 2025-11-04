@@ -9,6 +9,8 @@ import { ModeToggle } from "./components/theme/mod-toggle";
 import { ThemeProvider } from "./components/theme/theme-provider";
 import LoginPage from "./pages/auth/LoginPage";
 import { Toaster } from "sonner";
+import CookiePage from "./pages/cookie/CookiePage.tsx";
+import NicknamePage from "./pages/auth/NicknamePage.tsx";
 
 
 function App() {
@@ -26,6 +28,8 @@ function App() {
         <Route path="/" element={<IndexPage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/login" element={ <LoginPage />} />
+        <Route path="/cookie" element={ <CookiePage />} />
+        <Route path="/nickname" element={ <NicknamePage/>} />
       </Routes>
       </main>
       <Toaster richColors position="top-center" />
