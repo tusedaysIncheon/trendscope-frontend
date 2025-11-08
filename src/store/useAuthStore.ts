@@ -1,7 +1,7 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import axios from "axios"
-import { toast } from "sonner"
+
 
 // ✅ 유저 정보 타입 (백엔드의 UserResponseDTO와 동일)
 interface User {
@@ -39,11 +39,15 @@ export const useAuthStore = create<AuthState>()(
        * 3️⃣ axios 기본 헤더에 Authorization 추가
        */
       login: async (username, password) => {
+
+        const deviceId = navigator.userAgent
+
         try {
           // 1️⃣ 로그인 요청 (POST)
           const res = await axios.post("http://localhost:8080/vote/v1/user/login", {
             username,
             password,
+            deviceId,
           })
 
           // 2️⃣ 응답 데이터 구조

@@ -12,6 +12,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useState } from "react";
 import { toast } from "sonner";
 import { SocialLoginSection } from "./SocialFromBottom";
+import { useNavigate } from "react-router-dom";
 
 export function LoginForm({
   className,
@@ -21,6 +22,7 @@ export function LoginForm({
   const [password, setPassword] = useState("");
 
   const { login } = useAuthStore();
+  const navigate = useNavigate();
 
   const loginSubmitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +30,7 @@ export function LoginForm({
     try {
       await login(username, password);
       toast.success("로그인 성공 🎉");
+      navigate("/");
     } catch (error) {
       toast.error("아이디 비밀번호를 확인해주세요.");
     }
