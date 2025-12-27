@@ -13,6 +13,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { SocialLoginSection } from "./SocialFromBottom";
 import { useNavigate } from "react-router-dom";
+import { loginAPI } from "@/lib/api/UserApi";
 
 export function LoginForm({
   className,
@@ -21,14 +22,21 @@ export function LoginForm({
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const { login } = useAuthStore();
   const navigate = useNavigate();
+
+  const setAccessToken = useAuthStore((state) => state.setAccessToken);
+  const setUser = useAuthStore((state) => state.setUser);
 
   const loginSubmitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      await login(username, password);
+      const data = await loginAPI(username, password);
+      const { accessToken, user } = data;
+
+      setAccessToken(accessToken);
+      setUser(user);
+
       toast.success("로그인 성공 🎉");
       navigate("/");
     } catch (error) {

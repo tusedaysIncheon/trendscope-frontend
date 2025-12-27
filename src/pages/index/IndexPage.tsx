@@ -2,15 +2,25 @@ import { PageLayout } from "@/components/layouts/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
-import { axiosInstance } from "@/lib/api/axiosInstance";
-import { getMyInfoAPI } from "@/lib/api/UserApi";
+
+import { getMyInfoAPI, logoutAPI } from "@/lib/api/UserApi";
+import { toast } from "sonner";
 
 function IndexPage() {
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
+  const clearAuthState = useAuthStore((state) => state.logout);
 
   const handleLogout = async () => {
-    await logout();
-    window.location.href = "/"; // ✅ 새로고침하면서 상태 초기화
+    try{
+    await logoutAPI();
+    toast.success("로그아웃 되었습니다.");
+    
+    } catch(err){
+      console.error(err);
+    } finally {
+      clearAuthState();
+      window.location.href = "/login"; 
+    }
   };
 
   return (
