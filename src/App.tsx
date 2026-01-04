@@ -12,10 +12,17 @@ export default function App() {
 
   useEffect(()=>{
     const initAuth = async () => {
+
+      if(useAuthStore.getState().accessToken) return;
+
+      console.log("자동 로그인 중");
+
       try{
+        const deviceId = localStorage.getItem("deviceId") || "unknown-device";
+
         const { data: tokenData } = await axiosInstance.post(
           "/jwt/refresh",
-          {},
+          { deviceId },
           { skipAuth : true}
         );
 

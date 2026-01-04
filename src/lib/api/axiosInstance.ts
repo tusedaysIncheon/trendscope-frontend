@@ -38,7 +38,7 @@ axiosInstance.interceptors.response.use(
 
     if (error.response?.status !== 401) return Promise.reject(error);
 
-    if (requestUrl.includes("/login") || requestUrl.includes("/jwt/refresh")) {
+    if (requestUrl.includes("/login") || requestUrl.includes("/jwt/refresh") || requestUrl.includes("/logout")) {
       await useAuthStore.getState().logout(); // 서버 요청 없이 클라이언트 상태만 비움
       return Promise.reject(error);
     }
@@ -47,9 +47,12 @@ axiosInstance.interceptors.response.use(
     originalRequest._retry = true; // 재시도 플래그 설정
 
     try {
+
+      const deviceId = localStorage.getItem("deviceId");
+
       const refreshResponse = await axios.post(
         `${API}/jwt/refresh`,
-        {},
+        { deviceId },
         { withCredentials: true }
       );
 

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { UserResponseDTO } from "@/types/user";
+import { axiosInstance } from "@/lib/api/axiosInstance";
 
 interface AuthState {
   user: UserResponseDTO | null;
@@ -20,5 +21,13 @@ export const useAuthStore = create<AuthState>((set) => ({
   setAccessToken: (token) => set({ accessToken: token, isAuthenticated: !!token }),
   setUser: (user) => set({ user }),
   
-  logout: () => set({ user: null, accessToken: null, isAuthenticated: false }),
+  logout: async () => {
+    try {
+        await axiosInstance.post('v1/user/logout');
+    } catch(error) {
+      console.error("로그아웃 요청 실패:", error);
+    } finally {
+    set({ user: null, accessToken: null, isAuthenticated: false });
+    }
+  },
 }));

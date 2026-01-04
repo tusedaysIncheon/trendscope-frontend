@@ -130,7 +130,10 @@ export async function loginAPI(username: string, password: string) {
 
 export async function logoutAPI() {
   try {
-    await axiosInstance.post("/logout");
+    const deviceId = localStorage.getItem("deviceId") || "unknown-device";
+    await axiosInstance.post("v1/user/logout",{
+      deviceId: deviceId
+    });
   } catch (err) {
     console.warn("로그아웃 요청 중 오류 발생 (무시하고 진행):", err);
   }

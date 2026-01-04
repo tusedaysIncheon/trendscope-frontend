@@ -9,12 +9,13 @@ const BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 function CookiePage() {
   const navigate = useNavigate();
-  const { setToken } = useAuthStore();
+  const { setAccessToken, setUser } = useAuthStore();
   
 
   useEffect(() => {
     const fetchCookie2Body = async () => {
       try {
+        const deviceId = localStorage.getItem("deviceId") || "unknown-device";
         const exchangeResponse = await fetch(
           `${BACKEND_API_BASE_URL}/jwt/exchange`,
           {
@@ -23,6 +24,7 @@ function CookiePage() {
               "Content-Type": "application/json",
             },
             credentials: "include",
+            body: JSON.stringify({ deviceId : deviceId}),
           }
         );
 
@@ -48,7 +50,8 @@ function CookiePage() {
         const userInfo = await userResponseInfo.json();
         console.log("🔥 유저 응답:", userInfo);
 
-        setToken(accessToken, userInfo)
+       setAccessToken(accessToken);
+       setUser(userInfo);
 
         if (userInfo.needsNickname) {
           navigate("/nickname");
