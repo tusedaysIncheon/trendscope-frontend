@@ -109,7 +109,7 @@ export async function loginAPI(username: string, password: string) {
     deviceId = crypto.randomUUID();
     localStorage.setItem("deviceId", deviceId);
   }
-  try {
+  
     const response = await axiosInstance.post(
       "v1/user/login",
       {
@@ -120,12 +120,6 @@ export async function loginAPI(username: string, password: string) {
       { skipAuth: true }
     );
     return response.data;
-  } catch (error: any) {
-    console.log("로그인실패", error);
-    throw new Error(
-      error.response?.data?.messeage || "로그인에 실패하였습니다."
-    );
-  }
 }
 
 export async function logoutAPI() {

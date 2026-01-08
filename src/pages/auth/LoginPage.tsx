@@ -1,4 +1,4 @@
-import { LoginForm } from "@/components/form/login-form"
+import { LoginForm } from "@/components/form/LoginForm"
 import { PageLayout } from "@/components/layouts/PageLayout"
 
 export default function LoginPage() {
