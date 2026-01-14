@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 
 export function GuestHeader() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
+    <header className="fixed top-0 z-50 w-full bg-white dark:bg-[#09090b] ">
       <div className="flex h-[60px] items-center justify-between px-4 max-w-screen-xl mx-auto w-full">
         <a href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
           <img src={logo} alt="The WDUW Logo" className="h-8 w-auto select-none" />
