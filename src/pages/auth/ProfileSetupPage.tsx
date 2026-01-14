@@ -47,6 +47,7 @@ import {
   saveUserDetails,
   uploadToS3,
 } from "@/lib/api/UserApi";
+import { queryClient } from "@/main";
 
 // --- 1. Zod 스키마 정의 ---
 const profileSchema = z.object({
@@ -154,6 +155,8 @@ export default function ProfileSetupPage() {
 
       // 회원 정보 저장 API 호출
       await saveUserDetails(submitData);
+
+      queryClient.invalidateQueries({ queryKey: ['user'] });    
 
       toast.success("프로필 설정 완료! 🎉");
       navigate("/" , { replace: true }); // 메인으로 이동

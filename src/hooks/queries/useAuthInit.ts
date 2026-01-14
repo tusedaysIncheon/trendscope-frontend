@@ -2,32 +2,27 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { axiosInstance } from "../../lib/api/axiosInstance";
 import { useAuthStore } from "../../store/useAuthStore";
+import { getDeviceId } from "@/lib/utils";
 
 const initAuthProcess = async () => {
-  const deviceId = localStorage.getItem("deviceId") || "unknown-device";
+  const deviceId = getDeviceId();
 
-
-  const { data: tokenData } = await axiosInstance.post(
-    "/jwt/refresh", 
-    { deviceId }, 
+  const { data } = await axiosInstance.post(
+    "/jwt/refresh",
+    { deviceId },
     { skipAuth: true }
   );
   
-
-  const { data: userData } = await axiosInstance.get("/v1/user", {
-    headers: { Authorization: `Bearer ${tokenData.accessToken}` }
-  });
-
-  return { accessToken: tokenData.accessToken, user: userData };
+  return data.accessToken;
 };
 
 export function useAuthInit(enabled: boolean) {
-  const { setAccessToken, setUser } = useAuthStore();
+  const { setAccessToken } = useAuthStore();
 
-  const query = useQuery({
+  const { isLoading, isError, data: accessToken } = useQuery<string | null>({
     queryKey: ["auth-init"],
     queryFn: initAuthProcess,
-    enabled: enabled, 
+    enabled: enabled,
     retry: 0,
     staleTime: Infinity,
     gcTime: Infinity,
@@ -35,13 +30,14 @@ export function useAuthInit(enabled: boolean) {
   });
 
   useEffect(() => {
-    if (query.data) {
-      setAccessToken(query.data.accessToken);
-      setUser(query.data.user);
+    if (accessToken) {
+      setAccessToken(accessToken);
     }
-    if (query.isError) {
+    if (isError) {
+      setAccessToken(null);
     }
-  }, [query.data, query.isError, setAccessToken, setUser ]);
+  }, [accessToken, isError, setAccessToken]);
 
-  return query;
+  // Return only what the consumer (`AuthInitializer`) needs
+  return { isLoading };
 }

@@ -1,5 +1,5 @@
 import logo from "@/assets/logo.png"
-import { SocialLoginSection } from "@/components/form/SocialForm";
+import { SocialLoginSection } from "@/components/form/SocialSignForm";
 import { PageLayout } from "@/components/layouts/PageLayout";
 import { Button } from "@/components/ui/button";
 import {

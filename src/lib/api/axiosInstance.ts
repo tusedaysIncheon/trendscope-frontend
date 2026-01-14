@@ -67,17 +67,6 @@ axiosInstance.interceptors.response.use(
 
       useAuthStore.getState().setAccessToken(newAccessToken);
 
-      try {
-        const userResponse = await axiosInstance.get("/v1/user", {
-          headers: { Authorization: `Bearer ${newAccessToken}` },
-        });
-
-        useAuthStore.getState().setUser(userResponse.data);
-      } catch (userError) {
-        console.warn("유저 정보 복구 실패(치명적이지 않음):", userError);
-      }
-
-     
       originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
       return axiosInstance(originalRequest);
     } catch (refreshError) {

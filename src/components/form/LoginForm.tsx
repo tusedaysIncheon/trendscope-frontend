@@ -12,10 +12,11 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { toast } from "sonner";
 import { SocialLoginSection } from "./SocialFromBottom";
 import { useNavigate } from "react-router-dom";
-import { loginAPI } from "@/lib/api/UserApi";
+import { getUserLoadInfo, loginAPI } from "@/lib/api/UserApi";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
+import { queryClient } from "@/main";
 
 // ★ 분리한 스키마와 타입 import
 import { loginSchema, type LoginFormValues } from "@/lib/zodSchemas/LoginSchema";
@@ -26,7 +27,6 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
   const navigate = useNavigate();
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
-  const setUser = useAuthStore((state) => state.setUser);
 
   // React Hook Form 설정
   const {
@@ -45,18 +45,36 @@ export function LoginForm({
     try {
       
       const response = await loginAPI(data.username, data.password);
-      const { accessToken, user } = response;
+      const { accessToken } = response;
+      
+      if(!accessToken){
+        throw new Error("엑세스 토큰을 받아오지 못했습니다.")
+      }
 
       setAccessToken(accessToken);
-      setUser(user);
 
-      toast.success(`${user.nickname || user.username}님 환영합니다! 🎉`);
-      navigate("/");
+     const fullUserInfo = await getUserLoadInfo();
+      
+      queryClient.setQueryData(['user'], fullUserInfo);
+
+    const displayName = fullUserInfo.nickname || data.username;
+      
+      toast.success(`${displayName}님 환영합니다! 🎉`);
+
+      // (선택사항) 프로필 설정이 필요한 경우 분기 처리
+      if (fullUserInfo.needsProfileSetup) {
+         navigate("/profile-setup", { replace: true });
+      } else {
+         navigate("/", { replace: true });
+      }
+
     } catch (error) {
+      // 에러 처리 (기존 로직 유지)
       if (error instanceof AxiosError && error.response?.data) {
         const serverMessage = error.response.data.message;
         toast.error(serverMessage || "로그인에 실패했습니다.");
       } else {
+        console.error("Login Error:", error);
         toast.error("서버와 통신 중 오류가 발생했습니다.");
       }
     }

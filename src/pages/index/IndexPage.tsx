@@ -2,27 +2,24 @@ import { PageLayout } from "@/components/layouts/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
-
-import { logoutAPI } from "@/lib/api/UserApi";
+import { useUser } from "@/hooks/useUser";
 import { toast } from "sonner";
 
-
 function IndexPage() {
-  const { user, isAuthenticated } = useAuthStore();
-  const clearAuthState = useAuthStore((state) => state.logout);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const { data: user, isLoading } = useUser();
+  const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
 
-
   const handleLogout = async () => {
-    try{
-    await logoutAPI();
-    toast.success("로그아웃 되었습니다.");
-    
-    } catch(err){
+    try {
+      await logout();
+      toast.success("로그아웃 되었습니다.");
+    } catch (err) {
       console.error(err);
+      toast.error("로그아웃에 실패했습니다.");
     } finally {
-      clearAuthState();
-      window.location.href = "/login"; 
+      navigate("/login");
     }
   };
 
@@ -35,7 +32,9 @@ function IndexPage() {
       {isAuthenticated ? (
         <>
           <h1 className="text-3xl font-bold">
-            {user?.username}님, 환영합니다 🎉
+            {isLoading
+              ? "로딩 중..."
+              : `${user?.nickname ?? "사용자"}님, 환영합니다 🎉`}
           </h1>
           <p className="text-muted-foreground">
             오늘도 멋진 선택을 해보세요 👇
@@ -50,7 +49,7 @@ function IndexPage() {
           </Button>
 
           <button
-            onClick={async () => {
+            onClick={() => {
               navigate("/profile-setup");
             }}
             className="p-3 bg-blue-500 text-white rounded-lg"

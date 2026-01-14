@@ -4,7 +4,7 @@ import App from './App.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
-const queryCilent = new QueryClient({
+export const queryClient = new QueryClient({
     defaultOptions:{
         queries : {
             retry: 0,
@@ -15,7 +15,7 @@ const queryCilent = new QueryClient({
 
 createRoot(document.getElementById('root')!).render(
  
-    <QueryClientProvider client = {queryCilent}>
+    <QueryClientProvider client = {queryClient}>
 
         <App />
 
