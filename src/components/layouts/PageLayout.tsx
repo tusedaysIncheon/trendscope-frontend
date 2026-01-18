@@ -18,25 +18,9 @@ type PredefinedWidth = keyof typeof predefinedWidthClasses
 type PageLayoutWidth = PredefinedWidth | (string & {})
 
 export interface PageLayoutProps extends React.ComponentProps<"section"> {
-  /**
-   * 컨텐츠 정렬 방식. 기본값은 중앙 정렬(centered)입니다.
-   */
   variant?: PageLayoutVariant
-  /**
-   * 내부 컨텐츠 폭을 Tailwind width 유틸로 제한합니다.
-   * "sm" | "md" | "lg" | "xl" 등 사전 정의 값을 쓰거나
-   * 커스텀 클래스를 그대로 전달할 수 있습니다.
-   */
   contentWidth?: PageLayoutWidth
-  /**
-   * 내부 컨텐츠 래퍼에 붙일 추가 클래스.
-   * 기본적으로 내부는 column 레이아웃과 gap-6이 적용됩니다.
-   */
   contentClassName?: string
-  /**
-   * 내부 래퍼 적용을 끄고 싶을 때 true로 설정하세요.
-   * (레이아웃만 쓰고 싶은 경우)
-   */
   noContentWrapper?: boolean
 }
 
@@ -55,7 +39,9 @@ export function PageLayout({
   const inner = noContentWrapper ? (
     children
   ) : (
-    <div className={cn("flex w-full flex-col gap-6", widthClass, contentClassName)}>
+    // [수정 완료] mx-auto 추가!
+    // 태블릿에서 max-w-2xl 등으로 폭이 제한될 때, 자동으로 화면 중앙에 오게 만듭니다.
+    <div className={cn("flex w-full flex-col gap-6 mx-auto", widthClass, contentClassName)}>
       {children}
     </div>
   )
