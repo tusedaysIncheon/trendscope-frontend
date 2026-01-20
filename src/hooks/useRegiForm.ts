@@ -1,18 +1,28 @@
 import { existUserApi, loginAPI, signUpApi } from "@/lib/api/UserApi";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { UserRequestDTO } from "@/types/auth";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export function useRegiForm(form: any) {
   const navigate = useNavigate();
+  const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
   
   // ✅ Zustand 스토어 함수 가져오기
   const { setAccessToken } = useAuthStore(); 
 
   const onSubmit = useCallback(
     async (data: UserRequestDTO) => {
+      // 아이디 중복 검사를 통과하지 못했다면 제출 방지
+      if (isUsernameAvailable === false) {
+        form.setError("username", {
+          type: "manual",
+          message: "이미 사용 중인 아이디입니다. 😢",
+        });
+        return;
+      }
+
       try {
         // 1. 회원가입 요청
         const signUpResult = await signUpApi(data);
@@ -46,28 +56,47 @@ export function useRegiForm(form: any) {
         navigate("/login", { replace: true }); 
       }
     },
-    [form, navigate, setAccessToken]
+    [form, navigate, setAccessToken, isUsernameAvailable]
   );
 
   const checkUsernameExists = useCallback(async (username: string) => {
-    if (!username) return;
+    if (!username) {
+      setIsUsernameAvailable(null);
+      return;
+    }
+
+    // Zod 스키마 기본 검증을 통과하지 못하면 중복 체크 안 함
+    const { error } = form.getFieldState("username");
+    if (error) {
+      setIsUsernameAvailable(null);
+      return;
+    }
+
     try {
       const exist = await existUserApi(username);
-      if (exist) toast.error("이미 사용 중인 아이디입니다. 😢");
-      else toast.success("사용 가능한 아이디입니다! 🎉");
+      if (exist) {
+        form.setError("username", {
+          type: "manual",
+          message: "이미 사용 중인 아이디입니다. 😢",
+        });
+        setIsUsernameAvailable(false);
+      } else {
+        form.clearErrors("username");
+        setIsUsernameAvailable(true);
+      }
     } catch {
       toast.error("아이디 중복 확인에 실패했습니다. 😢");
+      setIsUsernameAvailable(null);
     }
-  }, []);
+  }, [form]);
 
   const handleBlurUsername = useCallback(
     (value: string) => {
       if (value.trim()) checkUsernameExists(value.trim());
+      else setIsUsernameAvailable(null);
     },
     [checkUsernameExists]
   );
 
-  return { onSubmit, handleBlurUsername };
-
-
+  return { onSubmit, handleBlurUsername, isUsernameAvailable };
 }

@@ -25,19 +25,19 @@ export function VoteCard({ data }: VoteCardProps) {
 
   return (
     <article className="w-full bg-white dark:bg-[#1e1e2d] rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden transition-all hover:shadow-md">
-      
+
       {/* 1. 헤더: 작성자 정보 */}
       <div className="flex items-center justify-between p-4 pb-2">
         <div className="flex items-center gap-3">
           <UserAvatar className="w-10 h-10 border border-gray-100 dark:border-gray-700" />
           <div className="flex flex-col">
             <span className="text-sm font-bold text-gray-900 dark:text-white leading-none">
-              {data.writer.name}
+              {data.writer.nickname}
             </span>
             <div className="flex items-center gap-1 mt-1">
               <span className="text-xs text-gray-500">@{data.writer.handle}</span>
               <span className="text-[10px] text-gray-300">•</span>
-              <span className="text-xs text-gray-400">{data.createdAt}</span>
+              <span className="text-xs text-gray-400">{data.createdDate}</span>
             </div>
           </div>
         </div>
@@ -49,7 +49,7 @@ export function VoteCard({ data }: VoteCardProps) {
       {/* 2. 본문: 질문 내용 */}
       <div className="px-4 py-2">
         <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 leading-snug mb-4">
-          {data.question}
+          {data.content}
         </h3>
 
         {/* 3. 투표 옵션 영역 */}
@@ -57,7 +57,7 @@ export function VoteCard({ data }: VoteCardProps) {
           {data.options.map((option) => {
             // 퍼센트 계산
             const percentage = isVoted
-              ? Math.round((option.count + (selectedOptionId === option.id ? 1 : 0)) / (data.totalVotes + 1) * 100)
+              ? Math.round((option.count + (selectedOptionId === option.id ? 1 : 0)) / (data.totalVoteCount + 1) * 100)
               : 0;
 
             const isSelected = selectedOptionId === option.id;
@@ -96,7 +96,7 @@ export function VoteCard({ data }: VoteCardProps) {
                   )}>
                     {option.text}
                   </span>
-                  
+
                   {isVoted && (
                     <span className="text-sm font-medium text-gray-900 dark:text-white">
                       {percentage}%
@@ -112,7 +112,7 @@ export function VoteCard({ data }: VoteCardProps) {
       {/* 4. 하단: 정보 및 액션 버튼 */}
       <div className="px-4 py-3 mt-2">
         <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-3 font-medium">
-          <span>{data.totalVotes + (isVoted ? 1 : 0)}명 참여</span>
+          <span>{data.totalVoteCount + (isVoted ? 1 : 0)}명 참여</span>
           <div className="flex items-center gap-1">
             <Clock className="w-3.5 h-3.5" />
             <span>{data.timeLeft}</span>
@@ -120,22 +120,22 @@ export function VoteCard({ data }: VoteCardProps) {
         </div>
 
         <div className="flex items-center justify-between border-t border-gray-100 dark:border-gray-800 pt-3">
-            {/* 좋아요 */}
-            <Button variant="ghost" size="sm" className="flex items-center gap-1.5 text-gray-500 hover:text-red-500 group">
-              <Heart className={cn("w-5 h-5 transition-colors", data.isLiked && "fill-red-500 text-red-500")} />
-              <span className="text-xs">{data.likeCount}</span>
-            </Button>
+          {/* 좋아요 */}
+          <Button variant="ghost" size="sm" className="flex items-center gap-1.5 text-gray-500 hover:text-red-500 group">
+            <Heart className={cn("w-5 h-5 transition-colors", data.isLiked && "fill-red-500 text-red-500")} />
+            <span className="text-xs">{data.likeCount}</span>
+          </Button>
 
-            {/* 댓글 */}
-            <Button variant="ghost" size="sm" className="flex items-center gap-1.5 text-gray-500 hover:text-blue-500">
-              <MessageCircle className="w-5 h-5" />
-              <span className="text-xs">{data.commentCount}</span>
-            </Button>
+          {/* 댓글 */}
+          <Button variant="ghost" size="sm" className="flex items-center gap-1.5 text-gray-500 hover:text-blue-500">
+            <MessageCircle className="w-5 h-5" />
+            <span className="text-xs">{data.commentCount}</span>
+          </Button>
 
-            {/* 공유 */}
-            <Button variant="ghost" size="sm" className="text-gray-500 hover:text-green-500">
-              <Share2 className="w-5 h-5" />
-            </Button>
+          {/* 공유 */}
+          <Button variant="ghost" size="sm" className="text-gray-500 hover:text-green-500">
+            <Share2 className="w-5 h-5" />
+          </Button>
         </div>
       </div>
     </article>

@@ -50,7 +50,8 @@ export function PageLayout({
     <section
       data-slot="page-layout"
       className={cn(
-        "flex flex-1 min-h-0 flex-col px-6 py-12 transition-[padding] duration-300",
+        "flex flex-1 flex-col px-6 py-12 transition-[padding] duration-300",
+        variant === "centered" ? "min-h-[100dvh]" : "min-h-0",
         variantClasses[variant],
         className
       )}

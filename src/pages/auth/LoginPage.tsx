@@ -6,7 +6,6 @@ export default function LoginPage() {
     <PageLayout
       variant="centered"
       contentWidth="sm"
-      className="md:py-16"
     >
       <LoginForm />
     </PageLayout>

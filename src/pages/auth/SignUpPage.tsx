@@ -16,14 +16,14 @@ import { useSignUpForm } from "@/hooks/useSignUpForm";
 
 export default function SignUpPage() {
   const form = useSignUpForm();
-  const { onSubmit, handleBlurUsername } = useRegiForm(form);
+  const { onSubmit, handleBlurUsername, isUsernameAvailable } = useRegiForm(form);
+  const { isValid, isSubmitting } = form.formState;
 
   return (
     <PageLayout
       variant="centered"
       contentWidth="sm"
       contentClassName="items-center text-center"
-      className="md:py-16"
     >
       <a href="/">
         <img src={logo} alt="The WDUW Logo" className="h-45 w-auto select-none" />
@@ -55,6 +55,11 @@ export default function SignUpPage() {
                     }}
                   />
                 </FormControl>
+                {isUsernameAvailable && !form.formState.errors.username && (
+                  <p className="text-sm font-medium text-blue-500">
+                    사용 가능한 아이디입니다! 🎉
+                  </p>
+                )}
                 <FormMessage />
               </FormItem>
             )}
@@ -112,9 +117,10 @@ export default function SignUpPage() {
 
           <Button
             type="submit"
+            disabled={!isValid || isSubmitting || isUsernameAvailable === false}
             className="w-full mt-2 active:scale-95 active:brightness-90 transition-transform duration-100"
           >
-            회원가입
+            {isSubmitting ? "가입 중..." : "회원가입"}
           </Button>
         </form>
       </Form>

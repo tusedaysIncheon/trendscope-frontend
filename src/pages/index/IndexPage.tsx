@@ -3,15 +3,17 @@ import { VoteCard } from "@/components/feature/vote/VoteCard";
 import type { VoteData } from "@/types/vote";
 import { useFeedStore } from "@/store/useFeedStore"; // ✅ 스토어 import
 
-// 🟢 MOCK DATA (데이터는 그대로 유지)
+// 🟢 MOCK DATA (데이터는 그대로 유지하되 필드명 수정)
 const RECOMMENDED_VOTES: VoteData[] = [
   {
     id: 1,
-    writer: { name: "김개발", handle: "dev_king" },
-    question: "주 4일제 도입, 찬성하시나요? 🤔",
-    createdAt: "1시간 전",
+    userId: 10,
+    writer: { id: 10, nickname: "김개발", handle: "dev_king" },
+    content: "주 4일제 도입, 찬성하시나요? 🤔",
+    createdDate: "1시간 전",
+    endDate: "2026-01-23T00:00:00",
     timeLeft: "2일 남음",
-    totalVotes: 1240,
+    totalVoteCount: 1240,
     isLiked: false,
     likeCount: 45,
     commentCount: 12,
@@ -23,11 +25,13 @@ const RECOMMENDED_VOTES: VoteData[] = [
   },
   {
     id: 2,
-    writer: { name: "민트초코", handle: "mincho_lover" },
-    question: "민초는 치약맛이다 vs 맛있는 초콜릿이다 🍫",
-    createdAt: "3시간 전",
+    userId: 11,
+    writer: { id: 11, nickname: "민트초코", handle: "mincho_lover" },
+    content: "민초는 치약맛이다 vs 맛있는 초콜릿이다 🍫",
+    createdDate: "3시간 전",
+    endDate: "2026-01-21T09:00:00",
     timeLeft: "5시간 남음",
-    totalVotes: 3200,
+    totalVoteCount: 3200,
     isLiked: true,
     likeCount: 120,
     commentCount: 89,
@@ -41,11 +45,13 @@ const RECOMMENDED_VOTES: VoteData[] = [
 const FOLLOWING_VOTES: VoteData[] = [
   {
     id: 3,
-    writer: { name: "내친구", handle: "my_friend" },
-    question: "점심 메뉴 추천좀 해줘 (팔로잉 전용) 🍜",
-    createdAt: "방금 전",
+    userId: 12,
+    writer: { id: 12, nickname: "내친구", handle: "my_friend" },
+    content: "점심 메뉴 추천좀 해줘 (팔로잉 전용) 🍜",
+    createdDate: "방금 전",
+    endDate: "2026-01-21T05:00:00",
     timeLeft: "1시간 남음",
-    totalVotes: 10,
+    totalVoteCount: 10,
     isLiked: false,
     likeCount: 2,
     commentCount: 5,
@@ -70,7 +76,7 @@ export default function IndexPage() {
       className="py-0 mt-0"
       contentClassName="gap-0"
     >
-  
+
       <div className="flex flex-col gap-6 pb-20 px-0">
         {currentVotes.length === 0 ? (
           <div className="py-20 text-center text-gray-400">

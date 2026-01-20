@@ -156,10 +156,10 @@ export default function ProfileSetupPage() {
       // 회원 정보 저장 API 호출
       await saveUserDetails(submitData);
 
-      queryClient.invalidateQueries({ queryKey: ['user'] });    
+      queryClient.invalidateQueries({ queryKey: ['user'] });
 
       toast.success("프로필 설정 완료! 🎉");
-      navigate("/" , { replace: true }); // 메인으로 이동
+      navigate("/", { replace: true }); // 메인으로 이동
     } catch (error: any) {
       console.error(error);
       const msg = error.response?.data?.message || "저장에 실패했습니다 😢";
@@ -171,7 +171,7 @@ export default function ProfileSetupPage() {
     <PageLayout
       variant="centered"
       contentWidth="md"
-      className="py-10 animate-in fade-in slide-in-from-bottom-4 duration-500"
+      className="animate-in fade-in slide-in-from-bottom-4 duration-500"
     >
       <Card className="w-full max-w-lg mx-auto shadow-xl border-t-4 border-t-primary">
         <CardHeader className="text-center space-y-2 pb-8">
@@ -367,8 +367,8 @@ export default function ProfileSetupPage() {
                               {rs === "SINGLE"
                                 ? "솔로 🥲"
                                 : rs === "IN_RELATIONSHIP"
-                                ? "연애중 🥰"
-                                : "결혼함 💍"}
+                                  ? "연애중 🥰"
+                                  : "결혼함 💍"}
                             </SelectItem>
                           ))}
                         </SelectContent>
