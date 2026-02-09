@@ -4,6 +4,7 @@ import { ko } from "date-fns/locale";
 import { MessageCircle, MoreHorizontal } from "lucide-react";
 
 import type { VoteData } from "@/types/vote";
+import { getFullImageUrl } from "@/shared/utils/image";
 
 import {
   Card,
@@ -11,7 +12,6 @@ import {
   CardFooter,
   CardHeader,
 } from "@/shared/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import {
   DropdownMenu,
@@ -22,6 +22,7 @@ import {
 import { VoteDetailModal } from "./VoteDetailModal";
 import { VoteOptionList } from "./VoteOptionList";
 import { useVoteMutation } from "../hooks/useVoteMutation";
+import { UserAvatar } from "@/features/user/components/UserAvatar";
 
 interface VoteCardProps {
   data: VoteData;
@@ -39,7 +40,7 @@ export function VoteCard({ data }: VoteCardProps) {
   };
 
 
-  const totalVotes = data.totalVotes;
+  const totalVotes = data.totalVote;
 
   return (
     <>
@@ -50,10 +51,11 @@ export function VoteCard({ data }: VoteCardProps) {
         {/* Header: Compact padding */}
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <div className="flex items-center gap-3">
-            <Avatar className="w-9 h-9 border border-border">
-              <AvatarImage src={data.writer.avatarUrl || undefined} alt={data.writer.nickname} />
-              <AvatarFallback>{data.writer.nickname[0]}</AvatarFallback>
-            </Avatar>
+            <UserAvatar
+              className="w-9 h-9 border-border"
+              imageUrl={data.writer.avatarUrl}
+              nickname={data.writer.nickname}
+            />
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
                 <span className="text-sm font-semibold text-foreground leading-none">
@@ -94,7 +96,7 @@ export function VoteCard({ data }: VoteCardProps) {
           {data.imageUrl && (
             <div className="rounded-lg overflow-hidden border border-border/50">
               <img
-                src={data.imageUrl}
+                src={getFullImageUrl(data.imageUrl)}
                 alt="Vote Content"
                 className="w-full h-auto object-cover max-h-[400px]"
               />
@@ -104,7 +106,7 @@ export function VoteCard({ data }: VoteCardProps) {
           {/* Vote Options: Logic for Grid vs List */}
           <VoteOptionList
             options={data.options}
-            totalVotes={data.totalVotes}
+            totalVotes={data.totalVote}
             votedOptionId={data.votedOptionId}
             isVoted={data.votedOptionId !== null}
             selectedOptionId={data.votedOptionId}

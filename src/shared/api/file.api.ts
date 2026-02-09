@@ -5,7 +5,7 @@ import type { ApiResponse } from "@/types/api";
 //이미지 업로드용 S3 presignedUrl 요청 API
 export async function getPresignedUrlAPI(
     filename: string,
-    folder: "profileImage" | "contentImage"
+    folder: "profileImage" | "contentImage" | "votepic" | "options"
 ) {
     try {
         const response = await axiosInstance.post<ApiResponse<any>>("/v1/s3/presigned-url", {

@@ -8,6 +8,7 @@ import LoginPage from "./pages/auth/LoginPage";
 import SignUpPage from "./pages/auth/SignUpPage";
 import CookiePage from "./pages/cookie/CookiePage";
 import ProfileSetupPage from "./pages/auth/ProfileSetupPage";
+import CreateVotePage from "./pages/vote/CreateVotePage";
 import LayoutGuidePage from "./pages/examples/LayoutGuidePage";
 
 
@@ -25,7 +26,7 @@ function AppRoutes() {
         <Route path="/explore" element={<div>탐색 페이지</div>} />
         <Route path="/messages" element={<div>메시지 페이지</div>} />
         <Route path="/profile" element={<div>프로필 페이지</div>} />
-        <Route path="/vote/create" element={<div>투표 만들기</div>} />
+        <Route path="/vote/create" element={<CreateVotePage />} />
       </Route>
 
       {/* [그룹 2] 전체 화면 페이지들 (로그인, 회원가입 등)

@@ -1,5 +1,6 @@
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getFullImageUrl } from "@/shared/utils/image";
 import type { VoteOption } from "@/types/vote";
 
 interface VoteOptionListProps {
@@ -27,10 +28,8 @@ export function VoteOptionList({
         return (
             <div className="grid grid-cols-2 gap-2 mt-2">
                 {options.map((option) => {
-                    // 낙관적 업데이트를 위한 로직: 내가 지금 막 투표한 항목이면 +1
-                    const currentCount =
-                        option.count +
-                        (selectedOptionId === option.id && votedOptionId === null ? 1 : 0);
+                    // 낙관적 업데이트를 위한 로직: 상위 컴포넌트(VoteCard)에서 이미 업데이트된 데이터를 props로 전달받음
+                    const currentCount = option.count;
 
                     const percentage =
                         totalVotes > 0 ? Math.round((currentCount / totalVotes) * 100) : 0;
@@ -55,7 +54,7 @@ export function VoteOptionList({
                             {/* Image background */}
                             {option.imageUrl ? (
                                 <img
-                                    src={option.imageUrl}
+                                    src={getFullImageUrl(option.imageUrl)}
                                     alt=""
                                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                 />
@@ -95,13 +94,18 @@ export function VoteOptionList({
                                         isVoted && "text-white/90"
                                     )}
                                 >
-                                    {option.text}
+                                    {option.content}
                                 </span>
 
                                 {isVoted && (
-                                    <span className="mt-1 text-lg font-bold text-white drop-shadow-md">
-                                        {percentage}%
-                                    </span>
+                                    <div className="flex flex-col items-center mt-1">
+                                        <span className="text-lg font-bold text-white drop-shadow-md">
+                                            {percentage}%
+                                        </span>
+                                        <span className="text-xs text-white/90 font-medium drop-shadow-md">
+                                            {currentCount}명
+                                        </span>
+                                    </div>
                                 )}
                             </div>
                         </button>
@@ -150,7 +154,7 @@ export function VoteOptionList({
 
                             {/* Text and Check */}
                             <div className="relative z-10 flex items-center gap-2 text-left mr-2">
-                                <span className="text-sm">{option.text}</span>
+                                <span className="text-sm">{option.content}</span>
                                 {isVoted && isSelected && (
                                     <Check className="w-3.5 h-3.5 text-primary" />
                                 )}
@@ -158,9 +162,14 @@ export function VoteOptionList({
 
                             {/* Percentage */}
                             {isVoted && (
-                                <span className="relative z-10 text-xs font-semibold">
-                                    {percentage}%
-                                </span>
+                                <div className="relative z-10 flex flex-col items-end ml-2">
+                                    <span className="text-xs font-semibold">
+                                        {percentage}%
+                                    </span>
+                                    <span className="text-[10px] text-muted-foreground">
+                                        {currentCount}표
+                                    </span>
+                                </div>
                             )}
                         </button>
                     );

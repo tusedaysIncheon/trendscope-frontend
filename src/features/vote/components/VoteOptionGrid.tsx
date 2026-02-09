@@ -90,7 +90,7 @@ export function VoteOptionGrid({
                                     isVoted && "text-white/90"
                                 )}
                             >
-                                {option.text}
+                                {option.content}
                             </span>
 
                             {isVoted && (

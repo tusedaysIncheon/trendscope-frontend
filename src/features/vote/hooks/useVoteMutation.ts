@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { castVoteApi } from "../api/vote.api";
 import type { VoteData } from "@/types/vote";
+import type { InfiniteData } from "@tanstack/react-query";
 
 export function useVoteMutation() {
     const queryClient = useQueryClient();
@@ -10,64 +11,108 @@ export function useVoteMutation() {
             castVoteApi(voteId, optionId),
 
         onMutate: async ({ voteId, optionId }) => {
-            // 1. Cancel outgoing refetches
+            // 1. 진행 중인 refetch 취소
             await queryClient.cancelQueries({ queryKey: ["votes"] });
 
-            // 2. Snapshot previous values
-            // We need to snapshot ALL queries starting with "votes"
-            const previousVotes = queryClient.getQueriesData<VoteData[]>({ queryKey: ["votes"] });
-
-            // 3. Optimistically update users' caches
-            queryClient.setQueriesData<VoteData[]>({ queryKey: ["votes"] }, (old) => {
-                if (!old) return [];
-
-                return old.map((vote) => {
-                    if (vote.id !== voteId) return vote;
-
-                    // Calculate new counts
-                    const oldVotedOptionId = vote.votedOptionId;
-                    const isReVote = oldVotedOptionId !== null;
-                    const isSameOption = oldVotedOptionId === optionId;
-
-                    if (isSameOption) return vote;
-
-                    const newOptions = vote.options.map((opt) => {
-                        if (opt.id === optionId) {
-                            return { ...opt, count: opt.count + 1 };
-                        }
-                        if (opt.id === oldVotedOptionId) {
-                            return { ...opt, count: Math.max(0, opt.count - 1) };
-                        }
-                        return opt;
-                    });
-
-                    return {
-                        ...vote,
-                        votedOptionId: optionId,
-                        options: newOptions,
-                        totalVotes: isReVote ? vote.totalVotes : vote.totalVotes + 1,
-                    };
-                });
+            // 2. 이전 상태 스냅샷 (rollback용)
+            const previousVotes = queryClient.getQueriesData<VoteData[]>({
+                queryKey: ["votes"]
             });
 
-            // Return context with the snapped value
+            // 3. Optimistic update
+            queryClient.setQueriesData<any>(
+                { queryKey: ["votes"] },
+                (old: any) => updateCacheData(old, voteId, optionId)
+            );
+
             return { previousVotes };
         },
 
-        onError: (err, newVote, context) => {
-            // Rollback all queries
-            if (context?.previousVotes) {
-                context.previousVotes.forEach(([queryKey, data]) => {
-                    queryClient.setQueryData(queryKey, data);
-                });
-            }
+        onError: (_err, _vars, context) => {
+            // Rollback: 이전 상태로 복원
+            context?.previousVotes.forEach(([queryKey, data]) => {
+                queryClient.setQueryData(queryKey, data);
+            });
         },
 
         onSettled: () => {
-            // ⚠️ MOCK MODE: 실제 서버가 없어서 refetch하면 초기값으로 돌아가버립니다.
-            // 그래서 Mock 모드일 때는 invalidateQueries를 막아둬야 낙관적 업데이트가 유지됩니다.
-            // TODO: 백엔드 연결 후 주석 해제하세요 (필수)
+            // 필요시 서버 동기화
             // queryClient.invalidateQueries({ queryKey: ["votes"] });
         },
     });
+}
+
+// ===== Helper Functions =====
+
+/**
+ * 투표 데이터 업데이트 (불변성 유지)
+ */
+function updateVote(vote: VoteData, voteId: number, optionId: number): VoteData {
+    if (vote.id !== voteId) return vote;
+
+    const oldVotedOptionId = vote.votedOptionId;
+
+    // 같은 옵션 재선택 시 변경 없음
+    if (oldVotedOptionId === optionId) return vote;
+
+    // 옵션 카운트 업데이트
+    const newOptions = vote.options.map((opt) => {
+        if (opt.id === optionId) {
+            return { ...opt, count: opt.count + 1 };
+        }
+        if (opt.id === oldVotedOptionId) {
+            return { ...opt, count: Math.max(0, opt.count - 1) };
+        }
+        return opt;
+    });
+
+    // totalVote를 옵션 합계로 재계산 (데이터 일관성 보장)
+    const newTotalVote = newOptions.reduce((sum, opt) => sum + opt.count, 0);
+
+    return {
+        ...vote,
+        votedOptionId: optionId,
+        options: newOptions,
+        totalVote: newTotalVote,
+    };
+}
+
+/**
+ * 캐시 데이터 타입별 업데이트
+ */
+function updateCacheData(old: any, voteId: number, optionId: number): any {
+    if (!old) return old;
+
+    // 1. Infinite Query (InfiniteData)
+    if (isInfiniteData(old)) {
+        return {
+            ...old,
+            pages: old.pages.map((page: VoteData[]) =>
+                page.map((vote) => updateVote(vote, voteId, optionId))
+            ),
+        };
+    }
+
+    // 2. List Query (Array)
+    if (Array.isArray(old)) {
+        return old.map((vote) => updateVote(vote, voteId, optionId));
+    }
+
+    // 3. Single Item Query (Object)
+    if (isSingleVote(old)) {
+        return updateVote(old, voteId, optionId);
+    }
+
+    return old;
+}
+
+/**
+ * Type Guards
+ */
+function isInfiniteData(data: any): data is InfiniteData<VoteData[]> {
+    return data?.pages && Array.isArray(data.pages);
+}
+
+function isSingleVote(data: any): data is VoteData {
+    return data?.id !== undefined && data?.options !== undefined;
 }

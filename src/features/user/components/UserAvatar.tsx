@@ -7,17 +7,20 @@ const CDN_BASE_URL = import.meta.env.VITE_CDN_BASE_URL;
 
 interface UserAvatarProps {
   className?: string;
+  imageUrl?: string | null;
+  nickname?: string;
 }
 
-export function UserAvatar({ className }: UserAvatarProps) {
-  const { data: user, isLoading } = useUser();
+export function UserAvatar({ className, imageUrl: propImageUrl, nickname: propNickname }: UserAvatarProps) {
+  const { data: user } = useUser();
 
-  if (isLoading) {
-    return <Skeleton className={cn("h-10 w-10 rounded-full", className)} />;
-  }
+  // Props로 전달된 값이 있으면 그것을 사용 (타인의 프로필)
+  // 없으면 내 정보 사용 (내 프로필)
+  const imageUrl = propImageUrl ?? user?.imageUrl;
+  const nickname = propNickname ?? user?.nickname;
 
-  const fullUrl = user?.imageUrl
-    ? `${CDN_BASE_URL}/${user.imageUrl}`
+  const fullUrl = imageUrl
+    ? `${CDN_BASE_URL}/${imageUrl}`
     : undefined;
 
   return (
@@ -30,12 +33,12 @@ export function UserAvatar({ className }: UserAvatarProps) {
       {fullUrl && (
         <AvatarImage
           src={fullUrl}
-          alt={user?.nickname ?? "User"}
+          alt={nickname ?? "User"}
           className="object-cover"
         />
       )}
       <AvatarFallback className="bg-muted text-xs font-medium">
-        {user?.nickname?.[0]?.toUpperCase() ?? "U"}
+        {nickname?.[0]?.toUpperCase() ?? "U"}
       </AvatarFallback>
     </Avatar>
   );
