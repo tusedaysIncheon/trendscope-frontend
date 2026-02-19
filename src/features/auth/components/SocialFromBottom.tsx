@@ -1,9 +1,11 @@
 import { FcGoogle } from "react-icons/fc"
 import { SiNaver } from "react-icons/si"
+import { useI18n } from "@/lib/i18n/I18nProvider";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 export function SocialLoginSection() {
+  const { t } = useI18n();
 
     const handleSocialLogin = (provider : string) =>{
     window.location.href = `${API_BASE_URL}/oauth2/authorization/${provider}`;
@@ -11,7 +13,7 @@ export function SocialLoginSection() {
 
   return (
     <div className="w-full max-w-sm flex flex-col items-center justify-center gap-4 mt-6">
-      <p className="text-sm text-muted-foreground">다른 서비스로 로그인</p>
+      <p className="text-sm text-muted-foreground">{t("login.providerTitle")}</p>
 
       {/* 아이콘 버튼 묶음 */}
       <div className="flex items-center justify-center gap-4">

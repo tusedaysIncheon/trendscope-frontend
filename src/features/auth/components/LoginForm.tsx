@@ -18,15 +18,20 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { queryClient } from "@/main";
+import { useI18n } from "@/lib/i18n/I18nProvider";
+import { LanguageSwitcher } from "@/shared/components/LanguageSwitcher";
 
 // ★ 분리한 스키마와 타입 import
 import { loginSchema, type LoginFormValues } from "@/lib/zodSchemas/LoginSchema";
+
+const PASSWORD_LOGIN_ENABLED = false;
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
 
   // React Hook Form 설정
@@ -43,13 +48,18 @@ export function LoginForm({
   });
 
   const onSubmit = async (data: LoginFormValues) => {
+    if (!PASSWORD_LOGIN_ENABLED) {
+      toast.error(t("login.toastDisabled"));
+      return;
+    }
+
     try {
 
       const response = await loginAPI(data.username, data.password);
       const { accessToken } = response;
 
       if (!accessToken) {
-        throw new Error("엑세스 토큰을 받아오지 못했습니다.")
+        throw new Error(t("login.toastTokenMissing"))
       }
 
       setAccessToken(accessToken);
@@ -60,7 +70,7 @@ export function LoginForm({
 
       const displayName = fullUserInfo.nickname || data.username;
 
-      toast.success(`${displayName}님 환영합니다! 🎉`);
+      toast.success(t("login.toastWelcome", { name: displayName }));
 
       // (선택사항) 프로필 설정이 필요한 경우 분기 처리
       if (fullUserInfo.needsProfileSetup) {
@@ -73,10 +83,10 @@ export function LoginForm({
       // 에러 처리 (기존 로직 유지)
       if (error instanceof AxiosError && error.response?.data) {
         const serverMessage = error.response.data.message;
-        toast.error(serverMessage || "로그인에 실패했습니다.");
+        toast.error(serverMessage || t("login.toastLoginFailed"));
       } else {
         console.error("Login Error:", error);
-        toast.error("서버와 통신 중 오류가 발생했습니다.");
+        toast.error(t("login.toastNetworkError"));
       }
     }
   };
@@ -85,6 +95,10 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <FieldGroup>
+          <div className="flex justify-end">
+            <LanguageSwitcher />
+          </div>
+
           <div className="flex flex-col items-center gap-2 text-center">
             <a href="/">
               <img
@@ -92,22 +106,25 @@ export function LoginForm({
                 alt="The WDUW Logo"
                 className="h-[11.25rem] w-auto select-none"
               />
-              <span className="sr-only">Vote Inc.</span>
+              <span className="sr-only">{t("common.appName")}</span>
             </a>
             <FieldDescription className="pt-12">
-              계정이 없으십니까?{" "}
-              <a href="/signup" className="text-primary hover:underline">
-                회원가입
-              </a>
+              {t("login.socialOnlyDescription")}
             </FieldDescription>
+            {!PASSWORD_LOGIN_ENABLED && (
+              <p className="text-xs text-muted-foreground">
+                {t("login.passwordDisabled")}
+              </p>
+            )}
           </div>
 
           <Field>
-            <FieldLabel htmlFor="username">아이디</FieldLabel>
+            <FieldLabel htmlFor="username">{t("login.usernameLabel")}</FieldLabel>
             <Input
               id="username"
               type="text"
-              placeholder="아이디를 입력하세요"
+              placeholder={t("login.usernamePlaceholder")}
+              disabled={!PASSWORD_LOGIN_ENABLED}
               {...register("username")}
               className={cn(
                 errors.username && "border-red-500 focus-visible:ring-red-500"
@@ -121,11 +138,12 @@ export function LoginForm({
           </Field>
 
           <Field>
-            <FieldLabel htmlFor="password">비밀번호</FieldLabel>
+            <FieldLabel htmlFor="password">{t("login.passwordLabel")}</FieldLabel>
             <Input
               id="password"
               type="password"
-              placeholder="비밀번호를 입력하세요"
+              placeholder={t("login.passwordPlaceholder")}
+              disabled={!PASSWORD_LOGIN_ENABLED}
               {...register("password")}
               className={cn(
                 errors.password && "border-red-500 focus-visible:ring-red-500"
@@ -141,10 +159,14 @@ export function LoginForm({
           <Field>
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !PASSWORD_LOGIN_ENABLED}
               className="w-full mt-2 active:scale-95 active:brightness-90 transition-transform duration-100"
             >
-              {isSubmitting ? "로그인 중..." : "로그인"}
+              {PASSWORD_LOGIN_ENABLED
+                ? isSubmitting
+                  ? t("login.submitting")
+                  : t("login.submit")
+                : t("login.socialOnlyButton")}
             </Button>
           </Field>
 
@@ -152,8 +174,8 @@ export function LoginForm({
         </FieldGroup>
       </form>
       <FieldDescription className="flex flex-col px-6 text-center text-sm text-muted-foreground">
-        본격 결정장애 해결 SNS,{" "}
-        <span className="font-medium text-foreground pt-1">WDUW✨</span>
+        {t("login.brandLineTop")}{" "}
+        <span className="font-medium text-foreground pt-1">{t("login.brandLineBottom")}</span>
       </FieldDescription>
     </div>
   );

@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/features/user/hooks/useUser";
-import { Skeleton } from "@/shared/ui/skeleton";
+
 
 const CDN_BASE_URL = import.meta.env.VITE_CDN_BASE_URL;
 

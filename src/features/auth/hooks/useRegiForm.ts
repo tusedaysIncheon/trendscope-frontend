@@ -1,11 +1,15 @@
 import { existUserApi, loginAPI, signUpApi } from "../api/auth.api";
+import type { SignUpFormValues } from "@/lib/zodSchemas/SignUpSchema";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { UserRequestDTO } from "@/types/auth";
+import type { UseFormReturn } from "react-hook-form";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-export function useRegiForm(form: any) {
+const LOCAL_SIGNUP_ENABLED = false;
+
+export function useRegiForm(form: UseFormReturn<SignUpFormValues>) {
   const navigate = useNavigate();
   const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
 
@@ -14,6 +18,12 @@ export function useRegiForm(form: any) {
 
   const onSubmit = useCallback(
     async (data: UserRequestDTO) => {
+      if (!LOCAL_SIGNUP_ENABLED) {
+        toast.error("현재 자체 회원가입은 비활성화되어 있습니다. 소셜 로그인을 이용해주세요.");
+        navigate("/login", { replace: true });
+        return;
+      }
+
       // 아이디 중복 검사를 통과하지 못했다면 제출 방지
       if (isUsernameAvailable === false) {
         form.setError("username", {
@@ -31,7 +41,7 @@ export function useRegiForm(form: any) {
         const loginResult = await loginAPI(data.username || "", data.password || "");
 
         // 3. 토큰 추출
-        const token = loginResult.accessToken || loginResult.token;
+        const token = loginResult.accessToken;
 
         if (token) {
 
@@ -60,6 +70,11 @@ export function useRegiForm(form: any) {
   );
 
   const checkUsernameExists = useCallback(async (username: string) => {
+    if (!LOCAL_SIGNUP_ENABLED) {
+      setIsUsernameAvailable(null);
+      return;
+    }
+
     if (!username) {
       setIsUsernameAvailable(null);
       return;

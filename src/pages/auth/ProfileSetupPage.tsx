@@ -47,6 +47,7 @@ import {
 import { saveUserDetails } from "@/features/user/api/user.api";
 import { getPresignedUrlAPI, uploadToS3 } from "@/shared/api/file.api";
 import { queryClient } from "@/main";
+import { getApiErrorMessage } from "@/lib/api/error";
 
 // --- 1. Zod 스키마 정의 ---
 const profileSchema = z.object({
@@ -159,10 +160,9 @@ export default function ProfileSetupPage() {
 
       toast.success("프로필 설정 완료! 🎉");
       navigate("/", { replace: true }); // 메인으로 이동
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      const msg = error.response?.data?.message || "저장에 실패했습니다 😢";
-      toast.error(msg);
+      toast.error(getApiErrorMessage(error, "저장에 실패했습니다 😢"));
     }
   };
 

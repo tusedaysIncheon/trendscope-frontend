@@ -2,9 +2,6 @@ import { Outlet } from "react-router-dom"
 import { Toaster } from "sonner"
 import { UserHeader } from "@/shared/layouts/headers/UserHeader"
 import { GuestHeader } from "@/shared/layouts/headers/GuestHeader"
-import { LeftSidebar } from "@/shared/layouts/sidebars/LeftSidebar"
-import { RightSidebar } from "@/shared/layouts/sidebars/RightSidebar"
-import { MobileNav } from "@/shared/layouts/navbars/navbaruser/NavBarMobile"
 import { useAuthStore } from "@/store/useAuthStore"
 
 export default function AppLayout() {
@@ -20,31 +17,15 @@ export default function AppLayout() {
 
         <main className="flex-1 flex flex-col gap-8 px-0 pb-24 md:px-4 lg:grid lg:grid-cols-12 lg:gap-14 lg:px-4 pt-2 md:pt-6 items-start">
 
-          {/* [좌측 사이드바 수정] 
-              1. pt-12 삭제 -> 중앙 탭과 시작 높이 맞춤
-              2. top-24 -> top-[80px] : 스크롤 시 헤더 바로 밑에 예쁘게 붙음
-          */}
-          <aside className="hidden lg:block lg:col-span-3 lg:sticky lg:top-[80px] h-fit self-start">
-            {isMember && <LeftSidebar />}
-          </aside>
-
-          {/* 중앙 컨텐츠 */}
-          <div className="w-full flex flex-col gap-8 lg:col-span-6 min-h-[500px]">
+          {/* 중앙 컨텐츠 (사이드바 제거로 col-span 전체 사용 혹은 중앙 정렬 유지) */}
+          {/* 기존: lg:col-span-6 -> 변경: lg:col-span-12 (전체 너비 사용) 또는 중앙 집중형 디자인에 맞게 조정 */}
+          <div className="w-full flex flex-col gap-8 lg:col-span-12 min-h-[500px]">
             <Outlet />
           </div>
-
-          {/* [우측 사이드바 수정] 
-              1. pt-12 삭제
-              2. top-24 -> top-[80px]
-          */}
-          <aside className="hidden lg:block lg:col-span-3 lg:sticky lg:top-[80px] h-fit self-start">
-            {isMember && <RightSidebar />}
-          </aside>
 
         </main>
       </div>
 
-      {isMember && <MobileNav />}
       <Toaster richColors position="top-center" />
       <div className="h-safe-bottom bg-transparent lg:hidden"></div>
     </div>
