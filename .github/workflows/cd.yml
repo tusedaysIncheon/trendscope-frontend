@@ -43,28 +43,44 @@ jobs:
 
   deploy-s3:
     needs: build
-    if: ${{ secrets.AWS_ROLE_TO_ASSUME != '' && secrets.S3_FRONTEND_BUCKET != '' }}
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check required secrets
+        id: check
+        run: |
+          if [ -z "${{ secrets.AWS_ROLE_TO_ASSUME }}" ] || [ -z "${{ secrets.S3_FRONTEND_BUCKET }}" ]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping deploy-s3: missing AWS_ROLE_TO_ASSUME or S3_FRONTEND_BUCKET"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Download artifact
+        if: ${{ steps.check.outputs.enabled == 'true' }}
         uses: actions/download-artifact@v4
         with:
           name: frontend-dist
           path: dist
 
       - name: Configure AWS credentials (OIDC)
+        if: ${{ steps.check.outputs.enabled == 'true' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Sync to S3
+        if: ${{ steps.check.outputs.enabled == 'true' }}
         run: aws s3 sync dist/ s3://${{ secrets.S3_FRONTEND_BUCKET }} --delete
 
       - name: Invalidate CloudFront cache
-        if: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID != '' }}
+        if: ${{ steps.check.outputs.enabled == 'true' }}
         run: |
-          aws cloudfront create-invalidation \
-            --distribution-id "${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}" \
-            --paths "/*"
+          if [ -n "${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}" ]; then
+            aws cloudfront create-invalidation \
+              --distribution-id "${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}" \
+              --paths "/*"
+          else
+            echo "Skipping CloudFront invalidation: CLOUDFRONT_DISTRIBUTION_ID is empty"
+          fi
