@@ -1,4 +1,3 @@
-import logo from "@/assets/logo.png"
 import { SocialLoginSection } from "@/features/auth/components/SocialSignForm";
 import { PageLayout } from "@/shared/layouts/PageLayout";
 import { Button } from "@/shared/ui/button";
@@ -26,10 +25,10 @@ export default function SignUpPage() {
       contentClassName="items-center text-center"
     >
       <a href="/">
-        <img src={logo} alt="The WDUW Logo" className="h-45 w-auto select-none" />
+        <img src="/logo1.png" alt="TrendScope Logo" className="h-45 w-auto select-none" />
       </a>
       <p className="text-muted-foreground">
-        회원가입하고 WDUW✨를 이용해보세요
+        회원가입하고 TrendScope를 시작해보세요
       </p>
 
       <SocialLoginSection />

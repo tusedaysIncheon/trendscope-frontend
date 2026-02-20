@@ -458,7 +458,7 @@ export default function ProfileSetupPage() {
                   ) : (
                     <>
                       <Sparkles className="w-5 h-5 mr-2 fill-white" />
-                      WDUW 시작하기 🚀
+                      TrendScope 시작하기 🚀
                     </>
                   )}
                 </Button>

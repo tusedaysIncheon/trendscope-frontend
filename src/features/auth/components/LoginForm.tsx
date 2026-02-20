@@ -1,4 +1,3 @@
-import logo from "@/assets/logo.png";
 import { Button } from "@/shared/ui/button";
 import {
   Field,
@@ -102,8 +101,8 @@ export function LoginForm({
           <div className="flex flex-col items-center gap-2 text-center">
             <a href="/">
               <img
-                src={logo}
-                alt="The WDUW Logo"
+                src="/logo1.png"
+                alt="TrendScope Logo"
                 className="h-[11.25rem] w-auto select-none"
               />
               <span className="sr-only">{t("common.appName")}</span>

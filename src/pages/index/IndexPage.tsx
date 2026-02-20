@@ -1,20 +1,192 @@
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Crown, EyeOff, Ruler, ShieldCheck, Shirt, Sparkles, Zap } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/shared/ui/dialog";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { LandingModelViewer } from "@/shared/components/LandingModelViewer";
 import { LandingHeader } from "@/shared/layouts/headers/LandingHeader";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useTicketSummary } from "@/features/tickets/hooks/useTicket";
+import { useUser } from "@/features/user/hooks/useUser";
+
+const FIRST_VISIT_PROMO_KEY = "trendscope:first-visit-promo:v1";
+const WELCOME_QUICK_TICKET_KEY_PREFIX = "trendscope:welcome-quick-ticket:v1:";
 
 export default function IndexPage() {
   const navigate = useNavigate();
   const { t, language } = useI18n();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const { data: ticketSummary, isFetched: isTicketSummaryFetched } = useTicketSummary();
+  const { data: user } = useUser();
   const isKorean = language === "ko";
+  const [isFirstVisitPromoOpen, setIsFirstVisitPromoOpen] = useState(false);
+  const [isWelcomeQuickTicketOpen, setIsWelcomeQuickTicketOpen] = useState(false);
+
+  const welcomeQuickTicketKey = useMemo(
+    () => (user?.username ? `${WELCOME_QUICK_TICKET_KEY_PREFIX}${user.username}` : null),
+    [user?.username]
+  );
+
+  const markFirstVisitPromoSeen = () => {
+    try {
+      localStorage.setItem(FIRST_VISIT_PROMO_KEY, "1");
+    } catch (error) {
+      console.warn("Failed to save first-visit promo state:", error);
+    }
+  };
+
+  const markWelcomeQuickTicketSeen = () => {
+    if (!welcomeQuickTicketKey) return;
+    try {
+      localStorage.setItem(welcomeQuickTicketKey, "1");
+    } catch (error) {
+      console.warn("Failed to save welcome-ticket promo state:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) return;
+    try {
+      const seen = localStorage.getItem(FIRST_VISIT_PROMO_KEY);
+      if (!seen) {
+        setIsFirstVisitPromoOpen(true);
+      }
+    } catch {
+      setIsFirstVisitPromoOpen(true);
+    }
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !welcomeQuickTicketKey) return;
+    if (!isTicketSummaryFetched || !ticketSummary) return;
+    if ((ticketSummary.quickTicketBalance ?? 0) < 1) return;
+
+    try {
+      const seen = localStorage.getItem(welcomeQuickTicketKey);
+      if (!seen) {
+        setIsWelcomeQuickTicketOpen(true);
+      }
+    } catch {
+      setIsWelcomeQuickTicketOpen(true);
+    }
+  }, [
+    isAuthenticated,
+    welcomeQuickTicketKey,
+    isTicketSummaryFetched,
+    ticketSummary?.quickTicketBalance,
+    ticketSummary,
+  ]);
+
+  const closeFirstVisitPromo = () => {
+    setIsFirstVisitPromoOpen(false);
+    markFirstVisitPromoSeen();
+  };
+
+  const closeWelcomeQuickTicket = () => {
+    setIsWelcomeQuickTicketOpen(false);
+    markWelcomeQuickTicketSeen();
+  };
+
+  const goToLoginFromPromo = () => {
+    closeFirstVisitPromo();
+    navigate("/login");
+  };
+
+  const goToMeasureFromWelcome = () => {
+    closeWelcomeQuickTicket();
+    navigate("/measure/info", { state: { measurementModel: "quick" } });
+  };
 
   return (
     <div className="font-['Inter',sans-serif] flex min-h-screen w-full items-center justify-center bg-background px-0">
+      <Dialog
+        open={isFirstVisitPromoOpen}
+        onOpenChange={(open) => {
+          if (!open) closeFirstVisitPromo();
+          else setIsFirstVisitPromoOpen(true);
+        }}
+      >
+        <DialogContent className="max-w-md overflow-hidden border-0 p-0" showCloseButton={false}>
+          <div className="bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#334155] p-6 text-white">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">
+              <Sparkles className="h-3.5 w-3.5" />
+              {isKorean ? "WELCOME EVENT" : "WELCOME EVENT"}
+            </div>
+            <DialogHeader className="space-y-2 text-left">
+              <DialogTitle className="text-2xl font-black leading-tight text-white">
+                {isKorean ? "최초 가입 시 퀵 티켓 1개 무료 지급" : "Get 1 FREE Quick Ticket on your first sign-up"}
+              </DialogTitle>
+              <DialogDescription className="text-sm leading-relaxed text-slate-200">
+                {isKorean
+                  ? "정면/측면 사진으로 3D 측정을 시작하고, 첫 퀵 측정을 무료로 체험해보세요."
+                  : "Start your 3D body measurement with front/side photos and claim your first quick measurement for free."}
+              </DialogDescription>
+            </DialogHeader>
+
+            <DialogFooter className="mt-5 flex-col gap-2 sm:flex-col sm:justify-start">
+              <Button
+                className="h-11 w-full rounded-xl bg-white text-slate-900 hover:bg-slate-100"
+                onClick={goToLoginFromPromo}
+              >
+                {isKorean ? "지금 시작하기" : "Start now"}
+              </Button>
+              <Button
+                variant="ghost"
+                className="h-10 w-full rounded-xl text-white hover:bg-white/10 hover:text-white"
+                onClick={closeFirstVisitPromo}
+              >
+                {isKorean ? "나중에 보기" : "Maybe later"}
+              </Button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={isWelcomeQuickTicketOpen}
+        onOpenChange={(open) => {
+          if (!open) closeWelcomeQuickTicket();
+          else setIsWelcomeQuickTicketOpen(true);
+        }}
+      >
+        <DialogContent className="max-w-md overflow-hidden border border-primary/20 p-0" showCloseButton={false}>
+          <div className="bg-white p-6">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+              <Crown className="h-3.5 w-3.5" />
+              {isKorean ? "가입 보너스 지급 완료" : "Welcome bonus granted"}
+            </div>
+            <DialogHeader className="space-y-2 text-left">
+              <DialogTitle className="text-2xl font-black leading-tight text-slate-900">
+                {isKorean ? "퀵 티켓 1개가 지급되었어요" : "1 Quick Ticket has been added"}
+              </DialogTitle>
+              <DialogDescription className="text-sm leading-relaxed text-slate-600">
+                {isKorean
+                  ? "지금 바로 퀵 측정을 시작해서 내 체형 데이터를 확인해보세요."
+                  : "Start your quick measurement now and check your body-fit data instantly."}
+              </DialogDescription>
+            </DialogHeader>
+
+            <DialogFooter className="mt-5 flex-col gap-2 sm:flex-col sm:justify-start">
+              <Button className="h-11 w-full rounded-xl" onClick={goToMeasureFromWelcome}>
+                {isKorean ? "퀵 측정 시작하기" : "Start quick measurement"}
+              </Button>
+              <Button variant="outline" className="h-10 w-full rounded-xl" onClick={closeWelcomeQuickTicket}>
+                {isKorean ? "닫기" : "Close"}
+              </Button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="flex min-h-screen w-full max-w-[480px] flex-col border-x border-border bg-background text-foreground shadow-xl shadow-slate-300/40 lg:max-w-none lg:border-x-0 lg:shadow-none">
         <LandingHeader
           ctaPath={isAuthenticated ? "/profile" : "/login"}
@@ -178,15 +350,15 @@ export default function IndexPage() {
           <div className="mx-auto max-w-[1200px] px-5 text-center">
             <p className="text-xs text-slate-400">© 2026 Trendscope Inc.</p>
             <div className="mt-3 flex justify-center gap-4 text-xs text-slate-500">
-              <a href="#" className="transition-colors hover:text-primary">
+              <Link to="/privacy" className="transition-colors hover:text-primary">
                 {t("common.privacy")}
-              </a>
-              <a href="#" className="transition-colors hover:text-primary">
+              </Link>
+              <Link to="/terms" className="transition-colors hover:text-primary">
                 {t("common.terms")}
-              </a>
-              <a href="#" className="transition-colors hover:text-primary">
+              </Link>
+              <Link to="/help" className="transition-colors hover:text-primary">
                 {t("common.help")}
-              </a>
+              </Link>
             </div>
           </div>
         </footer>

@@ -1,6 +1,6 @@
 import { Mail } from "lucide-react";
 import { SiNaver } from "react-icons/si";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card } from "@/shared/ui/card";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { LandingHeader } from "@/shared/layouts/headers/LandingHeader";
@@ -95,13 +95,13 @@ export default function LoginPage() {
             <div className="mt-6 text-center">
               <p className="mx-auto max-w-sm text-xs leading-relaxed text-slate-500">
                 {t("loginPage.termsPrefix")}{" "}
-                <a href="#" className="text-primary transition-colors hover:text-blue-600 hover:underline">
+                <Link to="/terms" className="text-primary transition-colors hover:text-blue-600 hover:underline">
                   {t("common.terms")}
-                </a>{" "}
+                </Link>{" "}
                 {t("loginPage.and")}{" "}
-                <a href="#" className="text-primary transition-colors hover:text-blue-600 hover:underline">
+                <Link to="/privacy" className="text-primary transition-colors hover:text-blue-600 hover:underline">
                   {t("common.privacy")}
-                </a>
+                </Link>
                 {t("loginPage.termsSuffix")}
               </p>
             </div>

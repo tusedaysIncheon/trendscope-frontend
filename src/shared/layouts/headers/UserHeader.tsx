@@ -1,4 +1,3 @@
-import logo from "@/assets/logo.png";
 import { UserAvatar } from "@/features/user/components/UserAvatar";
 import { useTheme } from "@/shared/theme/theme-provider";
 import { Button } from "@/shared/ui/button";
@@ -56,8 +55,8 @@ export function UserHeader() {
           className="flex items-center gap-2 transition-opacity hover:opacity-80 z-20"
         >
           <img
-            src={logo}
-            alt="The WDUW Logo"
+            src="/logo1.png"
+            alt="TrendScope Logo"
             className="h-8 w-auto select-none"
           />
         </a>
