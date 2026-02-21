@@ -39,6 +39,27 @@ function computeCameraDepthRange(distance: number, radius: number) {
   return { near, far };
 }
 
+function computeFitDistance(
+  cameraFovDeg: number,
+  aspect: number,
+  size: { x: number; y: number; z: number },
+  isStudio: boolean
+) {
+  const safeAspect = Math.max(0.45, aspect);
+  const vFov = THREE.MathUtils.degToRad(cameraFovDeg);
+  const hFov = 2 * Math.atan(Math.tan(vFov / 2) * safeAspect);
+
+  const verticalPadding = isStudio ? 1.12 : 1.22;
+  const horizontalPadding = isStudio ? 1.16 : 1.26;
+  const spanY = Math.max(size.y, 0.01);
+  const spanXz = Math.max(size.x, size.z, 0.01);
+
+  const distanceForHeight = (spanY * verticalPadding) / (2 * Math.tan(vFov / 2));
+  const distanceForWidth = (spanXz * horizontalPadding) / (2 * Math.tan(hFov / 2));
+
+  return Math.max(distanceForHeight, distanceForWidth);
+}
+
 function disposeObjectResources(object: any) {
   if (!object) return;
 
@@ -255,14 +276,18 @@ export function ModelGlbViewer({
 
           const size = box.getSize(new THREE.Vector3());
           const sphere = box.getBoundingSphere(new THREE.Sphere());
-          const maxDim = Math.max(size.x, size.y, size.z, 0.01);
-          const fov = (camera.fov * Math.PI) / 180;
-          const fitDistance = (maxDim / (2 * Math.tan(fov / 2))) * 1.35;
+          const fitDistance = computeFitDistance(
+            camera.fov,
+            camera.aspect || 1,
+            { x: size.x, y: size.y, z: size.z },
+            isStudio
+          );
           const orbit = parseCameraOrbit(cameraOrbit);
-          const distance = Math.max(fitDistance, orbit.radius);
+          const orbitScale = THREE.MathUtils.clamp(orbit.radius / 4.1, 0.7, 1.8);
+          const distance = fitDistance * orbitScale;
           const phi = THREE.MathUtils.degToRad(orbit.phi);
           const theta = THREE.MathUtils.degToRad(orbit.theta);
-          const targetY = isStudio ? size.y * 0.06 : 0;
+          const targetY = isStudio ? size.y * 0.08 : 0;
 
           camera.position.set(
             distance * Math.sin(phi) * Math.sin(theta),
@@ -282,7 +307,7 @@ export function ModelGlbViewer({
           lockedCameraQuaternion = camera.quaternion.clone();
 
           if (isStudio) {
-            const groundY = box.min.y - center.y - Math.max(0.01, size.y * 0.01);
+            const groundY = -size.y * 0.5 - Math.max(0.01, size.y * 0.02);
             shadowGround = new THREE.Mesh(
               new THREE.CircleGeometry(Math.max(1.1, sphere.radius * 1.8), 64),
               new THREE.ShadowMaterial({ opacity: 0.26 })

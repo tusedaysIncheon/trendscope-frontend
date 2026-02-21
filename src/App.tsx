@@ -18,6 +18,7 @@ import MeasurementPhotoPage from "./pages/measurement/MeasurementPhotoPage";
 import MeasurementSidePhotoPage from "./pages/measurement/MeasurementSidePhotoPage";
 import MeasurementAnalyzingPage from "./pages/measurement/MeasurementAnalyzingPage";
 import MeasurementResultPage from "./pages/measurement/MeasurementResultPage";
+import MeasurementSharedResultPage from "./pages/measurement/MeasurementSharedResultPage";
 import PrivacyPolicyPage from "./pages/legal/PrivacyPolicyPage";
 import TermsPage from "./pages/legal/TermsPage";
 import HelpPage from "./pages/help/HelpPage";
@@ -59,6 +60,7 @@ function AppRoutes() {
       <Route path="/measure/photos/side" element={<MeasurementSidePhotoPage />} />
       <Route path="/measure/analyzing/:jobId" element={<MeasurementAnalyzingPage />} />
       <Route path="/measure/result/:jobId" element={<MeasurementResultPage />} />
+      <Route path="/share/result/:shareToken" element={<MeasurementSharedResultPage />} />
       <Route path="/privacy" element={<PrivacyPolicyPage />} />
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/help" element={<HelpPage />} />

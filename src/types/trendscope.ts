@@ -98,6 +98,12 @@ export interface AnalyzeJobStartResponse {
   queuedAt: string;
 }
 
+export interface AnalyzeShareLinkResponse {
+  token: string;
+  shareUrl: string;
+  expiresAt: string;
+}
+
 export interface AnalyzeLengths {
   shoulder_width_cm: number | null;
   arm_length_cm: number | null;
@@ -160,6 +166,20 @@ export interface AnalyzeJobStatusResponse {
   completedAt: string | null;
   createdDate: string;
   updatedDate: string;
+}
+
+export interface AnalyzeSharedJobResponse {
+  jobId: string;
+  mode: AnalyzeMode;
+  status: AnalyzeJobStatus;
+  glbDownloadUrl?: string | null;
+  heightCm: number | null;
+  weightKg: number | null;
+  gender: Gender | null;
+  measurementModel: MeasurementModel | null;
+  result: AnalyzeResultPayload | null;
+  completedAt: string | null;
+  createdDate: string | null;
 }
 
 export interface AnalyzeJobListItem {

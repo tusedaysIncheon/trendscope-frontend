@@ -2,6 +2,8 @@ import axios from "axios";
 import { requestData } from "@/lib/api/request";
 import type {
   AnalyzeJobListResponse,
+  AnalyzeShareLinkResponse,
+  AnalyzeSharedJobResponse,
   AnalyzeJobStartRequest,
   AnalyzeJobStartResponse,
   AnalyzeJobStatusResponse,
@@ -62,5 +64,25 @@ export async function getMyAnalyzeJobs(size = 20): Promise<AnalyzeJobListRespons
       params: { size },
     },
     "측정 목록 조회 중 오류가 발생했습니다."
+  );
+}
+
+export async function createAnalyzeShareLink(jobId: string): Promise<AnalyzeShareLinkResponse> {
+  return requestData<AnalyzeShareLinkResponse>(
+    {
+      url: `/v1/analyze/jobs/${jobId}/share`,
+      method: "POST",
+    },
+    "공유 링크 발급 중 오류가 발생했습니다."
+  );
+}
+
+export async function getSharedAnalyzeJob(token: string): Promise<AnalyzeSharedJobResponse> {
+  return requestData<AnalyzeSharedJobResponse>(
+    {
+      url: `/v1/share/analyze/${encodeURIComponent(token)}`,
+      method: "GET",
+    },
+    "공유 결과 조회 중 오류가 발생했습니다."
   );
 }

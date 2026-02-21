@@ -7,6 +7,7 @@ export const queryKeys = {
     root: ["analyze"] as const,
     job: (jobId: string) => ["analyze", "job", jobId] as const,
     jobs: (size: number) => ["analyze", "jobs", size] as const,
+    sharedJob: (token: string) => ["analyze", "shared-job", token] as const,
   },
   measurement: {
     root: ["measurement"] as const,

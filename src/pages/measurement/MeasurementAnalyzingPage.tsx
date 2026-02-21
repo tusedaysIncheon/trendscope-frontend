@@ -214,6 +214,7 @@ export default function MeasurementAnalyzingPage() {
 
   const circleDashOffset = CIRCLE_CIRCUMFERENCE * (1 - circleProgress / 100);
   const showWarning = status !== "COMPLETED" && status !== "FAILED";
+  const shouldSpinRing = status === "RUNNING" || status === "QUEUED";
   const title =
     status === "COMPLETED"
       ? t("measureProgress.titleCompleted")
@@ -264,18 +265,26 @@ export default function MeasurementAnalyzingPage() {
           <div className="relative mx-auto mb-12 flex h-48 w-48 items-center justify-center">
             <svg className="h-full w-full -rotate-90 transform" viewBox="0 0 100 100" aria-hidden>
               <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="8" className="text-[#EBF4FA]" />
-              <circle
-                cx="50"
-                cy="50"
-                r="45"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="8"
-                strokeLinecap="round"
-                strokeDasharray={CIRCLE_CIRCUMFERENCE}
-                strokeDashoffset={circleDashOffset}
-                className={`transition-all duration-700 ${status === "FAILED" ? "text-red-500" : "text-primary"}`}
-              />
+              <g
+                className={
+                  shouldSpinRing
+                    ? "motion-safe:animate-[spin_2.4s_linear_infinite] [transform-origin:50%_50%]"
+                    : ""
+                }
+              >
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="45"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  strokeDasharray={CIRCLE_CIRCUMFERENCE}
+                  strokeDashoffset={circleDashOffset}
+                  className={`transition-all duration-700 ${status === "FAILED" ? "text-red-500" : "text-primary"}`}
+                />
+              </g>
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <span className="text-5xl font-bold tracking-tighter text-slate-900">

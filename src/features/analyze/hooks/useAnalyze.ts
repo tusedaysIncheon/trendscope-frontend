@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  createAnalyzeShareLink,
   getAnalyzeJobStatus,
   getMyAnalyzeJobs,
+  getSharedAnalyzeJob,
   issueAnalyzeUploadUrls,
   startAnalyzeJob,
   uploadFileToPresignedUrl,
@@ -9,6 +11,8 @@ import {
 import { queryKeys } from "@/lib/queryKeys";
 import type {
   AnalyzeJobListResponse,
+  AnalyzeShareLinkResponse,
+  AnalyzeSharedJobResponse,
   AnalyzeJobStartResponse,
   AnalyzeJobStatusResponse,
   AnalyzeMode,
@@ -38,6 +42,21 @@ export function useMyAnalyzeJobs(size = 20) {
     queryKey: queryKeys.analyze.jobs(size),
     queryFn: () => getMyAnalyzeJobs(size),
     staleTime: 10_000,
+  });
+}
+
+export function useSharedAnalyzeJob(shareToken: string | null) {
+  return useQuery<AnalyzeSharedJobResponse>({
+    queryKey: queryKeys.analyze.sharedJob(shareToken ?? "none"),
+    queryFn: () => getSharedAnalyzeJob(shareToken as string),
+    enabled: Boolean(shareToken),
+    retry: false,
+  });
+}
+
+export function useCreateAnalyzeShareLinkMutation() {
+  return useMutation<AnalyzeShareLinkResponse, Error, string>({
+    mutationFn: (jobId: string) => createAnalyzeShareLink(jobId),
   });
 }
 

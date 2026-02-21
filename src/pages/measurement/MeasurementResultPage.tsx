@@ -6,12 +6,13 @@ import {
   ExternalLink,
   Loader2,
   Ruler,
+  Share2,
   Sparkles,
 } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { useAnalyzeJob } from "@/features/analyze/hooks/useAnalyze";
+import { useAnalyzeJob, useCreateAnalyzeShareLinkMutation } from "@/features/analyze/hooks/useAnalyze";
 import {
   useCreateFashionRecommendationMutation,
   useFashionRecommendationHistory,
@@ -32,13 +33,21 @@ import type {
 } from "@/types/trendscope";
 
 type JsonRecord = Record<string, unknown>;
+type StrategyLine = {
+  label: string;
+  value: string;
+};
+
+type StrategySection = {
+  title: string;
+  lines: StrategyLine[];
+};
 
 const LENGTH_KEYS = [
   "shoulder_width_cm",
   "arm_length_cm",
   "leg_length_cm",
   "torso_length_cm",
-  "inseam_cm",
 ] as const;
 
 const CIRCUMFERENCE_KEYS = [
@@ -85,6 +94,30 @@ function asFiniteNumber(value: unknown): number | null {
   return value;
 }
 
+function meaningfulText(value: unknown): string | null {
+  const text = asString(value).trim();
+  if (!text) return null;
+  const lower = text.toLowerCase();
+  if (
+    lower === "--" ||
+    lower === "---" ||
+    lower === "unknown" ||
+    lower === "null" ||
+    lower === "undefined" ||
+    lower === "n/a" ||
+    lower === "none"
+  ) {
+    return null;
+  }
+  return text;
+}
+
+function meaningfulList(value: unknown): string[] {
+  return asArray(value)
+    .map((item) => meaningfulText(item))
+    .filter((item): item is string => Boolean(item));
+}
+
 function formatCm(value: number | null | undefined) {
   if (typeof value !== "number") return "--";
   const fixed = value.toFixed(2);
@@ -95,6 +128,83 @@ function prettyKey(raw: string) {
   return raw
     .replace(/_/g, " ")
     .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function buildStrategySection(key: string, value: unknown): StrategySection | null {
+  const record = asRecord(value);
+
+  if (!record) {
+    const text = meaningfulText(value);
+    if (!text) return null;
+    return {
+      title: prettyKey(key),
+      lines: [{ label: "Recommendation", value: text }],
+    };
+  }
+
+  const lines: StrategyLine[] = [];
+
+  if (key === "top_length") {
+    const recommendation = meaningfulText(record.recommendation);
+    const wearingMethod = meaningfulList(record.wearing_method);
+    const reason = meaningfulText(record.reason);
+    if (recommendation) lines.push({ label: "Recommendation", value: recommendation });
+    if (wearingMethod.length > 0) lines.push({ label: "Wearing Method", value: wearingMethod.join(" · ") });
+    if (reason) lines.push({ label: "Reason", value: reason });
+  } else if (key === "bottom_fit") {
+    const rise = meaningfulText(record.rise);
+    const length = meaningfulText(record.length);
+    const silhouette = meaningfulText(record.silhouette);
+    const reason = meaningfulText(record.reason);
+    if (rise) lines.push({ label: "Rise", value: rise });
+    if (length) lines.push({ label: "Length", value: length });
+    if (silhouette) lines.push({ label: "Silhouette", value: silhouette });
+    if (reason) lines.push({ label: "Reason", value: reason });
+  } else if (key === "shoulder_correction") {
+    const neckline = meaningfulList(record.neckline);
+    const shoulderLine = meaningfulList(record.shoulder_line);
+    const reason = meaningfulText(record.reason);
+    if (neckline.length > 0) lines.push({ label: "Neckline", value: neckline.join(" · ") });
+    if (shoulderLine.length > 0) lines.push({ label: "Shoulder Line", value: shoulderLine.join(" · ") });
+    if (reason) lines.push({ label: "Reason", value: reason });
+  } else {
+    Object.entries(record).forEach(([subKey, subValue]) => {
+      if (Array.isArray(subValue)) {
+        const list = meaningfulList(subValue);
+        if (list.length > 0) {
+          lines.push({ label: prettyKey(subKey), value: list.join(" · ") });
+        }
+        return;
+      }
+      const text = meaningfulText(subValue);
+      if (text) {
+        lines.push({ label: prettyKey(subKey), value: text });
+      }
+    });
+  }
+
+  if (lines.length === 0) return null;
+  return { title: prettyKey(key), lines };
+}
+
+async function copyText(text: string) {
+  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+  if (typeof document !== "undefined") {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "absolute";
+    textarea.style.left = "-9999px";
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textarea);
+    return;
+  }
+  throw new Error("clipboard_unavailable");
 }
 
 function isSuccessAnalyzeResult(
@@ -173,6 +283,10 @@ export default function MeasurementResultPage() {
     data: createdRecommendation,
     isPending: isCreatingRecommendation,
   } = useCreateFashionRecommendationMutation();
+  const {
+    mutateAsync: createShareLink,
+    isPending: isCreatingShareLink,
+  } = useCreateAnalyzeShareLinkMutation();
   const createRequestedRef = useRef(false);
 
   useEffect(() => {
@@ -291,6 +405,15 @@ export default function MeasurementResultPage() {
     successResult && isPremiumAnalyzeResult(successResult)
       ? asRecord(successResult.circumferences)
       : null;
+  const strategySections = useMemo(
+    () =>
+      strategy
+        ? Object.entries(strategy)
+            .map(([key, value]) => buildStrategySection(key, value))
+            .filter((section): section is StrategySection => section !== null)
+        : [],
+    [strategy]
+  );
 
   const handleCreateRecommendation = async () => {
     if (!jobId || !recommendationPayload) return;
@@ -300,6 +423,52 @@ export default function MeasurementResultPage() {
       toast.success(t("measureResult.createRecommendationSuccess"));
     } catch {
       toast.error(t("measureResult.createRecommendationError"));
+    }
+  };
+
+  const handleShareResult = async () => {
+    if (!jobId) {
+      toast.error(t("measureResult.shareError"));
+      return;
+    }
+
+    let shareUrl = "";
+    try {
+      const response = await createShareLink(jobId);
+      shareUrl = response.shareUrl;
+    } catch {
+      toast.error(t("measureResult.shareError"));
+      return;
+    }
+
+    if (!shareUrl) {
+      toast.error(t("measureResult.shareError"));
+      return;
+    }
+
+    const shareData = {
+      title: t("measureResult.title"),
+      text: t("measureResult.shareText"),
+      url: shareUrl,
+    };
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share(shareData);
+        toast.success(t("measureResult.shareSuccess"));
+        return;
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+      }
+    }
+
+    try {
+      await copyText(shareUrl);
+      toast.success(t("measureResult.shareSuccess"));
+    } catch {
+      toast.error(t("measureResult.shareError"));
     }
   };
 
@@ -418,6 +587,21 @@ export default function MeasurementResultPage() {
               type="button"
               variant="secondary"
               size="sm"
+              onClick={handleShareResult}
+              disabled={isCreatingShareLink}
+              className="h-8 whitespace-nowrap rounded-full px-3 text-[11px] font-bold sm:h-9 sm:px-4 sm:text-xs"
+            >
+              {isCreatingShareLink ? (
+                <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Share2 className="mr-1 h-3.5 w-3.5" />
+              )}
+              <span className="inline-block translate-y-[0.5px]">{t("measureResult.shareButton")}</span>
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
               onClick={() => navigate("/profile", { replace: true })}
               className="h-8 whitespace-nowrap rounded-full px-3 text-[11px] font-bold sm:h-9 sm:px-4 sm:text-xs"
             >
@@ -427,7 +611,7 @@ export default function MeasurementResultPage() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[560px] px-4 py-8">
+      <main className="mx-auto w-full max-w-[760px] px-4 py-8">
         <div className="mb-8 space-y-6">
           <div>
             <div className="mb-2 flex items-end justify-between">
@@ -453,7 +637,7 @@ export default function MeasurementResultPage() {
         </div>
 
         <div className="space-y-6">
-          <Card className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+          <Card className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
             <div className="mb-3 flex items-center justify-between">
               <h2 className="text-base font-bold text-slate-900 sm:text-lg">{t("measureResult.viewerTitle")}</h2>
               <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-600">
@@ -463,7 +647,7 @@ export default function MeasurementResultPage() {
             <ModelGlbViewer
               src={glbViewerUrl}
               appearance="studio"
-              className="h-[340px] w-full sm:h-[400px]"
+              className="h-[460px] w-full sm:h-[560px]"
               autoRotate
               emptyMessage={t("measureResult.viewerEmpty")}
               errorMessage={t("measureResult.viewerError")}
@@ -486,18 +670,13 @@ export default function MeasurementResultPage() {
                   {t("measureResult.lengths")}
                 </h3>
                 <div className="space-y-2">
-                  {LENGTH_KEYS.map((key) => {
-                    if (!isPremium && key === "inseam_cm") {
-                      return null;
-                    }
-                    return (
-                      <ResultMetricRow
-                        key={key}
-                        label={metricLabels[key] ?? prettyKey(key)}
-                        value={asFiniteNumber(lengths?.[key])}
-                      />
-                    );
-                  })}
+                  {LENGTH_KEYS.map((key) => (
+                    <ResultMetricRow
+                      key={key}
+                      label={metricLabels[key] ?? prettyKey(key)}
+                      value={asFiniteNumber(lengths?.[key])}
+                    />
+                  ))}
                 </div>
               </div>
 
@@ -514,14 +693,6 @@ export default function MeasurementResultPage() {
                         value={asFiniteNumber(circumferences?.[key])}
                       />
                     ))}
-                  </div>
-                  <div className="mt-3 rounded-lg border border-slate-200 bg-[#EBF4FA]/50 px-3 py-2">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      {t("measureResult.bodyShape")}
-                    </p>
-                    <p className="mt-1 text-sm font-bold text-slate-900">
-                      {asString(successResult.body_shape) || "--"}
-                    </p>
                   </div>
                 </div>
               )}
@@ -604,24 +775,22 @@ export default function MeasurementResultPage() {
                   </div>
                 )}
 
-                {strategy && Object.keys(strategy).length > 0 && (
+                {strategySections.length > 0 && (
                   <div>
                     <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
                       {t("measureResult.strategy")}
                     </h3>
                     <div className="space-y-2">
-                      {Object.entries(strategy).map(([key, value]) => (
-                        <div key={key} className="rounded-lg border border-slate-200 bg-white px-3 py-3">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{prettyKey(key)}</p>
-                          <p className="mt-1 text-sm font-medium text-slate-700">
-                            {Array.isArray(value)
-                              ? value.map((item) => asString(item)).filter(Boolean).join(", ") || "--"
-                              : isRecord(value)
-                                ? Object.entries(value)
-                                    .map(([subKey, subValue]) => `${prettyKey(subKey)}: ${asString(subValue) || "--"}`)
-                                    .join(" / ")
-                                : asString(value) || "--"}
-                          </p>
+                      {strategySections.map((section) => (
+                        <div key={section.title} className="rounded-lg border border-slate-200 bg-white px-3 py-3">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{section.title}</p>
+                          <div className="mt-1 space-y-1">
+                            {section.lines.map((line) => (
+                              <p key={`${section.title}-${line.label}`} className="text-sm font-medium text-slate-700">
+                                <span className="font-semibold text-slate-900">{line.label}:</span> {line.value}
+                              </p>
+                            ))}
+                          </div>
                         </div>
                       ))}
                     </div>
