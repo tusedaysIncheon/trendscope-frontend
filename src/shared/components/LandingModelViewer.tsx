@@ -6,7 +6,7 @@ type LandingModelViewerProps = {
 };
 
 export function LandingModelViewer({
-  modelSrc = "/landing-preview.glb",
+  modelSrc = "/person_0.glb",
 }: LandingModelViewerProps) {
   const { t } = useI18n();
 
@@ -16,6 +16,7 @@ export function LandingModelViewer({
         src={modelSrc}
         autoRotate
         interactive={false}
+        appearance="dark"
         cameraOrbit="0deg 76deg 3.9m"
         className="h-full w-full rounded-none border-0 pointer-events-none"
         emptyMessage={t("landing.modelLoading")}

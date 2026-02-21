@@ -462,6 +462,7 @@ export default function MeasurementResultPage() {
             </div>
             <ModelGlbViewer
               src={glbViewerUrl}
+              appearance="studio"
               className="h-[340px] w-full sm:h-[400px]"
               autoRotate
               emptyMessage={t("measureResult.viewerEmpty")}

@@ -13,6 +13,7 @@ type ModelGlbViewerProps = {
   emptyMessage?: string;
   errorMessage?: string;
   cameraOrbit?: string;
+  appearance?: "studio" | "dark";
 };
 
 const DEPTH_MIN_NEAR = 0.01;
@@ -85,6 +86,7 @@ export function ModelGlbViewer({
   emptyMessage = "No 3D model available.",
   errorMessage = "Failed to load 3D model.",
   cameraOrbit = "0deg 78deg 4.1m",
+  appearance = "studio",
 }: ModelGlbViewerProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const renderMountRef = useRef<HTMLDivElement | null>(null);
@@ -119,7 +121,13 @@ export function ModelGlbViewer({
     let dracoLoader: DRACOLoader | null = null;
     let gltfLoader: GLTFLoader | null = null;
     let modelRoot: any = null;
+    let modelPivot: any = null;
+    let shadowGround: any = null;
     let passiveRotation = 0;
+    let isUserInteracting = false;
+    let lockedCameraPosition: any = null;
+    let lockedCameraQuaternion: any = null;
+    let detachControlListeners: (() => void) | null = null;
 
     const resize = () => {
       if (disposed || !renderer || !camera) return;
@@ -132,7 +140,8 @@ export function ModelGlbViewer({
     };
     try {
       scene = new THREE.Scene();
-      scene.background = new THREE.Color("#1b2434");
+      const isStudio = appearance === "studio";
+      scene.background = new THREE.Color(isStudio ? "#f1f4f9" : "#1b2434");
 
       renderer = new THREE.WebGLRenderer({
         antialias: true,
@@ -143,28 +152,56 @@ export function ModelGlbViewer({
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.2;
+      renderer.toneMappingExposure = isStudio ? 1.06 : 1.2;
       renderer.shadowMap.enabled = true;
-      renderer.shadowMap.type = THREE.PCFShadowMap;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-      camera = new THREE.PerspectiveCamera(34, 1, 0.01, 200);
+      camera = new THREE.PerspectiveCamera(32, 1, 0.01, 200);
       controls = new OrbitControls(camera, renderer.domElement);
-      controls.enableDamping = true;
+      controls.enableDamping = interactive && !autoRotate;
       controls.dampingFactor = 0.08;
       controls.enablePan = false;
       controls.enableRotate = interactive;
       controls.enableZoom = interactive;
-      controls.autoRotate = interactive && autoRotate;
-      controls.autoRotateSpeed = 1.25;
+      // Keep camera stable by default; auto-rotation is applied to the model itself.
+      controls.autoRotate = false;
 
-      const hemiLight = new THREE.HemisphereLight(0xdbeafe, 0x0f172a, 1.05);
-      const keyLight = new THREE.DirectionalLight(0xffffff, 1.25);
-      keyLight.position.set(2.4, 3.4, 2.6);
+      const controlsAny = controls as any;
+      if (interactive && typeof controlsAny.addEventListener === "function") {
+        const onStart = () => {
+          isUserInteracting = true;
+        };
+        const onEnd = () => {
+          isUserInteracting = false;
+          if (camera) {
+            lockedCameraPosition = camera.position.clone();
+            lockedCameraQuaternion = camera.quaternion.clone();
+          }
+        };
+        controlsAny.addEventListener("start", onStart);
+        controlsAny.addEventListener("end", onEnd);
+        detachControlListeners = () => {
+          if (typeof controlsAny.removeEventListener === "function") {
+            controlsAny.removeEventListener("start", onStart);
+            controlsAny.removeEventListener("end", onEnd);
+          }
+        };
+      }
+
+      const hemiLight = isStudio
+        ? new THREE.HemisphereLight(0xffffff, 0xdbe4ef, 1.1)
+        : new THREE.HemisphereLight(0xdbeafe, 0x0f172a, 1.05);
+      const keyLight = new THREE.DirectionalLight(0xffffff, isStudio ? 1.35 : 1.25);
+      keyLight.position.set(2.8, 3.6, 2.2);
       keyLight.castShadow = true;
-      const fillLight = new THREE.DirectionalLight(0x9cc3ff, 0.45);
-      fillLight.position.set(-2.2, 2.2, 1.4);
-      const rimLight = new THREE.DirectionalLight(0xffffff, 0.6);
-      rimLight.position.set(-1.8, 2.8, -2.8);
+      keyLight.shadow.mapSize.width = 1024;
+      keyLight.shadow.mapSize.height = 1024;
+      keyLight.shadow.radius = 3;
+      keyLight.shadow.bias = -0.0002;
+      const fillLight = new THREE.DirectionalLight(isStudio ? 0xf2f6ff : 0x9cc3ff, isStudio ? 0.75 : 0.45);
+      fillLight.position.set(-2.6, 2.3, 1.9);
+      const rimLight = new THREE.DirectionalLight(0xffffff, isStudio ? 0.45 : 0.6);
+      rimLight.position.set(-1.5, 2.7, -3.0);
       scene.add(hemiLight, keyLight, fillLight, rimLight);
 
       dracoLoader = new DRACOLoader();
@@ -199,12 +236,22 @@ export function ModelGlbViewer({
             if (!mesh.isMesh) return;
             mesh.castShadow = true;
             mesh.receiveShadow = true;
+            const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+            materials.forEach((material: any) => {
+              if (!material) return;
+              if ("metalness" in material) material.metalness = Math.min(material.metalness ?? 0, 0.08);
+              if ("roughness" in material) material.roughness = Math.max(material.roughness ?? 0.55, 0.55);
+              if ("envMapIntensity" in material) material.envMapIntensity = isStudio ? 0.8 : 1.0;
+              material.needsUpdate = true;
+            });
           });
 
           const box = new THREE.Box3().setFromObject(modelRoot);
           const center = box.getCenter(new THREE.Vector3());
+          modelPivot = new THREE.Group();
           modelRoot.position.sub(center);
-          scene.add(modelRoot);
+          modelPivot.add(modelRoot);
+          scene.add(modelPivot);
 
           const size = box.getSize(new THREE.Vector3());
           const sphere = box.getBoundingSphere(new THREE.Sphere());
@@ -215,6 +262,7 @@ export function ModelGlbViewer({
           const distance = Math.max(fitDistance, orbit.radius);
           const phi = THREE.MathUtils.degToRad(orbit.phi);
           const theta = THREE.MathUtils.degToRad(orbit.theta);
+          const targetY = isStudio ? size.y * 0.06 : 0;
 
           camera.position.set(
             distance * Math.sin(phi) * Math.sin(theta),
@@ -226,10 +274,24 @@ export function ModelGlbViewer({
           camera.far = depthRange.far;
           camera.updateProjectionMatrix();
 
-          controls.target.set(0, 0, 0);
+          controls.target.set(0, targetY, 0);
           controls.minDistance = Math.max(0.8, distance * 0.4);
           controls.maxDistance = distance * 2.6;
           controls.update();
+          lockedCameraPosition = camera.position.clone();
+          lockedCameraQuaternion = camera.quaternion.clone();
+
+          if (isStudio) {
+            const groundY = box.min.y - center.y - Math.max(0.01, size.y * 0.01);
+            shadowGround = new THREE.Mesh(
+              new THREE.CircleGeometry(Math.max(1.1, sphere.radius * 1.8), 64),
+              new THREE.ShadowMaterial({ opacity: 0.26 })
+            );
+            shadowGround.rotation.x = -Math.PI / 2;
+            shadowGround.position.set(0, groundY, 0);
+            shadowGround.receiveShadow = true;
+            scene.add(shadowGround);
+          }
 
           setHasError(false);
           setIsLoading(false);
@@ -256,11 +318,20 @@ export function ModelGlbViewer({
         if (disposed || !renderer || !scene || !camera || !controls) return;
 
         frameId = window.requestAnimationFrame(animate);
-        if (!interactive && autoRotate && modelRoot) {
-          passiveRotation += 0.0038;
-          modelRoot.rotation.y = passiveRotation;
+        if (autoRotate && modelRoot) {
+          passiveRotation += isStudio ? 0.0032 : 0.0038;
+          if (modelPivot) {
+            modelPivot.rotation.y = passiveRotation;
+          } else {
+            modelRoot.rotation.y = passiveRotation;
+          }
         }
         controls.update();
+        if (autoRotate && !isUserInteracting && lockedCameraPosition && lockedCameraQuaternion) {
+          camera.position.copy(lockedCameraPosition);
+          camera.quaternion.copy(lockedCameraQuaternion);
+          camera.updateMatrixWorld();
+        }
         renderer.render(scene, camera);
       };
       animate();
@@ -278,8 +349,17 @@ export function ModelGlbViewer({
       }
       resizeObserver?.disconnect();
       window.removeEventListener("resize", resize);
+      detachControlListeners?.();
       controls?.dispose();
       dracoLoader?.dispose();
+      if (modelPivot && scene) {
+        scene.remove(modelPivot);
+      }
+      if (shadowGround && scene) {
+        scene.remove(shadowGround);
+        shadowGround.geometry.dispose();
+        shadowGround.material?.dispose?.();
+      }
       disposeObjectResources(modelRoot);
       scene?.clear();
       renderer?.dispose();
@@ -291,11 +371,14 @@ export function ModelGlbViewer({
         }
       }
     };
-  }, [src, autoRotate, interactive, cameraOrbit]);
+  }, [src, autoRotate, interactive, cameraOrbit, appearance]);
 
   const containerClassName = useMemo(
-    () => `relative overflow-hidden rounded-xl bg-[#1b2434] ${className ?? ""}`,
-    [className]
+    () =>
+      `relative overflow-hidden rounded-xl ${
+        appearance === "studio" ? "bg-[#f1f4f9]" : "bg-[#1b2434]"
+      } ${className ?? ""}`,
+    [appearance, className]
   );
 
   return (
