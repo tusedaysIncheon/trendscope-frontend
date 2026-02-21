@@ -21,6 +21,7 @@ import MeasurementResultPage from "./pages/measurement/MeasurementResultPage";
 import MeasurementSharedResultPage from "./pages/measurement/MeasurementSharedResultPage";
 import PrivacyPolicyPage from "./pages/legal/PrivacyPolicyPage";
 import TermsPage from "./pages/legal/TermsPage";
+import RefundPolicyPage from "./pages/legal/RefundPolicyPage";
 import HelpPage from "./pages/help/HelpPage";
 
 import LayoutGuidePage from "./pages/examples/LayoutGuidePage";
@@ -63,6 +64,7 @@ function AppRoutes() {
       <Route path="/share/result/:shareToken" element={<MeasurementSharedResultPage />} />
       <Route path="/privacy" element={<PrivacyPolicyPage />} />
       <Route path="/terms" element={<TermsPage />} />
+      <Route path="/refund-policy" element={<RefundPolicyPage />} />
       <Route path="/help" element={<HelpPage />} />
       <Route path="/dev/layout-guide" element={<LayoutGuidePage />} />
 

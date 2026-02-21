@@ -867,8 +867,8 @@ export default function MeasurementResultPage() {
                           <p className="text-sm font-bold text-slate-800">{section.title}</p>
                           <div className="mt-2 space-y-1.5">
                             {section.lines.map((line, lineIndex) => (
-                              <div key={`${section.title}-${lineIndex}`} className="grid grid-cols-[88px_1fr] items-start gap-2 text-sm sm:grid-cols-[96px_1fr]">
-                                <span className="font-semibold text-slate-600">{line.label}</span>
+                              <div key={`${section.title}-${lineIndex}`} className="grid grid-cols-1 items-start gap-1.5 text-sm sm:grid-cols-[96px_1fr] sm:gap-2">
+                                <span className="font-semibold text-slate-600 sm:pt-0.5">{line.label}</span>
                                 <span className="leading-relaxed text-slate-800">{line.value}</span>
                               </div>
                             ))}
@@ -889,14 +889,14 @@ export default function MeasurementResultPage() {
                         <div key={`outfit-${index}`} className={INSIGHT_CARD_CLASS}>
                           <p className="text-sm font-semibold text-slate-900">{asString(guide.title) || `Outfit ${index + 1}`}</p>
                           <div className="mt-2 space-y-1.5 text-sm">
-                            <div className="grid grid-cols-[88px_1fr] items-start gap-2 sm:grid-cols-[96px_1fr]">
-                              <span className="font-semibold text-slate-600">{getOutfitFieldLabel("items", language)}</span>
+                            <div className="grid grid-cols-1 items-start gap-1.5 text-sm sm:grid-cols-[96px_1fr] sm:gap-2">
+                              <span className="font-semibold text-slate-600 sm:pt-0.5">{getOutfitFieldLabel("items", language)}</span>
                               <span className="leading-relaxed text-slate-800">
                                 {asArray(guide.items).map((item) => asString(item)).filter(Boolean).join(", ") || "--"}
                               </span>
                             </div>
-                            <div className="grid grid-cols-[88px_1fr] items-start gap-2 sm:grid-cols-[96px_1fr]">
-                              <span className="font-semibold text-slate-600">{getOutfitFieldLabel("fitNotes", language)}</span>
+                            <div className="grid grid-cols-1 items-start gap-1.5 text-sm sm:grid-cols-[96px_1fr] sm:gap-2">
+                              <span className="font-semibold text-slate-600 sm:pt-0.5">{getOutfitFieldLabel("fitNotes", language)}</span>
                               <span className="leading-relaxed text-slate-700">
                                 {asArray(guide.fit_notes).map((note) => asString(note)).filter(Boolean).join(" · ") || "--"}
                               </span>
