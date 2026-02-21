@@ -587,21 +587,6 @@ export default function MeasurementResultPage() {
               type="button"
               variant="secondary"
               size="sm"
-              onClick={handleShareResult}
-              disabled={isCreatingShareLink}
-              className="h-8 whitespace-nowrap rounded-full px-3 text-[11px] font-bold sm:h-9 sm:px-4 sm:text-xs"
-            >
-              {isCreatingShareLink ? (
-                <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <Share2 className="mr-1 h-3.5 w-3.5" />
-              )}
-              <span className="inline-block translate-y-[0.5px]">{t("measureResult.shareButton")}</span>
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
               onClick={() => navigate("/profile", { replace: true })}
               className="h-8 whitespace-nowrap rounded-full px-3 text-[11px] font-bold sm:h-9 sm:px-4 sm:text-xs"
             >
@@ -633,6 +618,22 @@ export default function MeasurementResultPage() {
             </div>
             <p className="text-base leading-relaxed text-slate-500">{t("measureResult.subtitle")}</p>
             <p className="text-xs font-medium text-amber-700">{t("measureResult.measurementToleranceNotice")}</p>
+            <div>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleShareResult}
+                disabled={isCreatingShareLink}
+                className="h-10 rounded-full px-5 text-sm font-bold"
+              >
+                {isCreatingShareLink ? (
+                  <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+                ) : (
+                  <Share2 className="mr-1.5 h-4 w-4" />
+                )}
+                <span>{t("measureResult.shareButton")}</span>
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -649,6 +650,7 @@ export default function MeasurementResultPage() {
               appearance="studio"
               className="h-[460px] w-full sm:h-[560px]"
               autoRotate
+              cameraOrbit="0deg 76deg 4.8m"
               emptyMessage={t("measureResult.viewerEmpty")}
               errorMessage={t("measureResult.viewerError")}
             />

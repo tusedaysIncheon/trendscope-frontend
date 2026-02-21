@@ -187,6 +187,7 @@ export default function MeasurementSharedResultPage() {
               appearance="studio"
               className="h-[460px] w-full sm:h-[560px]"
               autoRotate
+              cameraOrbit="0deg 76deg 4.8m"
               emptyMessage={t("measureResult.viewerEmpty")}
               errorMessage={t("measureResult.viewerError")}
             />
