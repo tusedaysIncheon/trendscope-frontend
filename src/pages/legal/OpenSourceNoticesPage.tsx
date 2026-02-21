@@ -88,6 +88,13 @@ export default function OpenSourceNoticesPage() {
       link: "https://modal.com/legal/terms",
     },
     {
+      name: "Cloudflare",
+      provider: "Cloudflare, Inc.",
+      purpose: "DNS 및 도메인 관리",
+      license: "Cloudflare Terms of Use",
+      link: "https://www.cloudflare.com/terms/",
+    },
+    {
       name: "Creem",
       provider: "Creem",
       purpose: "결제 처리(Merchant of Record)",
