@@ -2,19 +2,26 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260220" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/logo1.png?v=20260220" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260220" />
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=20260222" />
+    <link id="app-favicon" rel="icon" type="image/png" sizes="32x32" href="/logo1.png?v=20260222" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260222" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TrendScope</title>
     <script>
       (function() {
         try {
           const theme = localStorage.getItem('vite-ui-theme');
-          if (theme === 'dark') {
+          const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const isDark = theme === 'dark' || (!theme && prefersDark);
+          if (isDark) {
             document.documentElement.classList.add('dark');
           } else {
             document.documentElement.classList.remove('dark');
+          }
+
+          const favicon = document.getElementById('app-favicon');
+          if (favicon) {
+            favicon.setAttribute('href', isDark ? '/logo2.png?v=20260222' : '/logo1.png?v=20260222');
           }
         } catch (_) {}
       })();
