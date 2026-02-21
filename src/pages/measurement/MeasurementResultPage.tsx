@@ -448,6 +448,7 @@ export default function MeasurementResultPage() {
               </span>
             </div>
             <p className="text-base leading-relaxed text-slate-500">{t("measureResult.subtitle")}</p>
+            <p className="text-xs font-medium text-amber-700">{t("measureResult.measurementToleranceNotice")}</p>
           </div>
         </div>
 
