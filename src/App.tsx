@@ -22,6 +22,7 @@ import MeasurementSharedResultPage from "./pages/measurement/MeasurementSharedRe
 import PrivacyPolicyPage from "./pages/legal/PrivacyPolicyPage";
 import TermsPage from "./pages/legal/TermsPage";
 import RefundPolicyPage from "./pages/legal/RefundPolicyPage";
+import OpenSourceNoticesPage from "./pages/legal/OpenSourceNoticesPage";
 import HelpPage from "./pages/help/HelpPage";
 
 import LayoutGuidePage from "./pages/examples/LayoutGuidePage";
@@ -65,6 +66,7 @@ function AppRoutes() {
       <Route path="/privacy" element={<PrivacyPolicyPage />} />
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/refund-policy" element={<RefundPolicyPage />} />
+      <Route path="/open-source-notices" element={<OpenSourceNoticesPage />} />
       <Route path="/help" element={<HelpPage />} />
       <Route path="/dev/layout-guide" element={<LayoutGuidePage />} />
 

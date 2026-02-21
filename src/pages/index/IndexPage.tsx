@@ -362,6 +362,9 @@ export default function IndexPage() {
               <Link to="/refund-policy" className="transition-colors hover:text-primary">
                 {t("common.refundPolicy")}
               </Link>
+              <Link to="/open-source-notices" className="transition-colors hover:text-primary">
+                {t("common.openSourceNotices")}
+              </Link>
             </div>
           </div>
         </footer>
