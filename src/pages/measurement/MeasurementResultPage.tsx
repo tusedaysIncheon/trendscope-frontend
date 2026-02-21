@@ -42,6 +42,12 @@ type StrategySection = {
   title: string;
   lines: StrategyLine[];
 };
+type StrategyLabelResolver = {
+  getTitle: (key: string) => string;
+  getField: (key: string) => string;
+};
+const INSIGHT_SECTION_TITLE_CLASS = "mb-2 text-xs font-bold tracking-wide text-slate-500";
+const INSIGHT_CARD_CLASS = "rounded-xl border border-slate-200 bg-white px-4 py-3.5";
 
 const LENGTH_KEYS = [
   "shoulder_width_cm",
@@ -130,15 +136,80 @@ function prettyKey(raw: string) {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-function buildStrategySection(key: string, value: unknown): StrategySection | null {
+function getStrategyTitleLabel(key: string, language: string): string {
+  const isKorean = language.toLowerCase().startsWith("ko");
+  const ko: Record<string, string> = {
+    top_length: "상의 길이",
+    bottom_fit: "하의 핏",
+    shoulder_correction: "어깨 보정",
+  };
+  const en: Record<string, string> = {
+    top_length: "Top Length",
+    bottom_fit: "Bottom Fit",
+    shoulder_correction: "Shoulder Correction",
+  };
+  return (isKorean ? ko[key] : en[key]) ?? prettyKey(key);
+}
+
+function getStrategyFieldLabel(key: string, language: string): string {
+  const isKorean = language.toLowerCase().startsWith("ko");
+  const ko: Record<string, string> = {
+    recommendation: "추천",
+    wearing_method: "연출법",
+    reason: "이유",
+    rise: "밑위",
+    length: "기장",
+    silhouette: "실루엣",
+    neckline: "넥라인",
+    shoulder_line: "어깨선",
+  };
+  const en: Record<string, string> = {
+    recommendation: "Recommendation",
+    wearing_method: "Wearing Method",
+    reason: "Reason",
+    rise: "Rise",
+    length: "Length",
+    silhouette: "Silhouette",
+    neckline: "Neckline",
+    shoulder_line: "Shoulder Line",
+  };
+  return (isKorean ? ko[key] : en[key]) ?? prettyKey(key);
+}
+
+function getDiagnosisTitleLabel(key: string, language: string): string {
+  const isKorean = language.toLowerCase().startsWith("ko");
+  const ko: Record<string, string> = {
+    upper_lower_balance: "상하체 밸런스",
+    shoulder_frame: "어깨 프레임",
+    arm_balance: "팔 밸런스",
+  };
+  const en: Record<string, string> = {
+    upper_lower_balance: "Upper/Lower Balance",
+    shoulder_frame: "Shoulder Frame",
+    arm_balance: "Arm Balance",
+  };
+  return (isKorean ? ko[key] : en[key]) ?? prettyKey(key);
+}
+
+function getOutfitFieldLabel(kind: "items" | "fitNotes", language: string): string {
+  const isKorean = language.toLowerCase().startsWith("ko");
+  if (kind === "items") return isKorean ? "아이템" : "Items";
+  return isKorean ? "핏 포인트" : "Fit Notes";
+}
+
+function buildStrategySection(
+  key: string,
+  value: unknown,
+  labels: StrategyLabelResolver
+): StrategySection | null {
   const record = asRecord(value);
 
   if (!record) {
     const text = meaningfulText(value);
     if (!text) return null;
     return {
-      title: prettyKey(key),
-      lines: [{ label: "Recommendation", value: text }],
+      title: labels.getTitle(key),
+      lines: [{ label: labels.getField("recommendation"), value: text }],
     };
   }
 
@@ -148,43 +219,43 @@ function buildStrategySection(key: string, value: unknown): StrategySection | nu
     const recommendation = meaningfulText(record.recommendation);
     const wearingMethod = meaningfulList(record.wearing_method);
     const reason = meaningfulText(record.reason);
-    if (recommendation) lines.push({ label: "Recommendation", value: recommendation });
-    if (wearingMethod.length > 0) lines.push({ label: "Wearing Method", value: wearingMethod.join(" · ") });
-    if (reason) lines.push({ label: "Reason", value: reason });
+    if (recommendation) lines.push({ label: labels.getField("recommendation"), value: recommendation });
+    if (wearingMethod.length > 0) lines.push({ label: labels.getField("wearing_method"), value: wearingMethod.join(" · ") });
+    if (reason) lines.push({ label: labels.getField("reason"), value: reason });
   } else if (key === "bottom_fit") {
     const rise = meaningfulText(record.rise);
     const length = meaningfulText(record.length);
     const silhouette = meaningfulText(record.silhouette);
     const reason = meaningfulText(record.reason);
-    if (rise) lines.push({ label: "Rise", value: rise });
-    if (length) lines.push({ label: "Length", value: length });
-    if (silhouette) lines.push({ label: "Silhouette", value: silhouette });
-    if (reason) lines.push({ label: "Reason", value: reason });
+    if (rise) lines.push({ label: labels.getField("rise"), value: rise });
+    if (length) lines.push({ label: labels.getField("length"), value: length });
+    if (silhouette) lines.push({ label: labels.getField("silhouette"), value: silhouette });
+    if (reason) lines.push({ label: labels.getField("reason"), value: reason });
   } else if (key === "shoulder_correction") {
     const neckline = meaningfulList(record.neckline);
     const shoulderLine = meaningfulList(record.shoulder_line);
     const reason = meaningfulText(record.reason);
-    if (neckline.length > 0) lines.push({ label: "Neckline", value: neckline.join(" · ") });
-    if (shoulderLine.length > 0) lines.push({ label: "Shoulder Line", value: shoulderLine.join(" · ") });
-    if (reason) lines.push({ label: "Reason", value: reason });
+    if (neckline.length > 0) lines.push({ label: labels.getField("neckline"), value: neckline.join(" · ") });
+    if (shoulderLine.length > 0) lines.push({ label: labels.getField("shoulder_line"), value: shoulderLine.join(" · ") });
+    if (reason) lines.push({ label: labels.getField("reason"), value: reason });
   } else {
     Object.entries(record).forEach(([subKey, subValue]) => {
       if (Array.isArray(subValue)) {
         const list = meaningfulList(subValue);
         if (list.length > 0) {
-          lines.push({ label: prettyKey(subKey), value: list.join(" · ") });
+          lines.push({ label: labels.getField(subKey), value: list.join(" · ") });
         }
         return;
       }
       const text = meaningfulText(subValue);
       if (text) {
-        lines.push({ label: prettyKey(subKey), value: text });
+        lines.push({ label: labels.getField(subKey), value: text });
       }
     });
   }
 
   if (lines.length === 0) return null;
-  return { title: prettyKey(key), lines };
+  return { title: labels.getTitle(key), lines };
 }
 
 async function copyText(text: string) {
@@ -409,10 +480,15 @@ export default function MeasurementResultPage() {
     () =>
       strategy
         ? Object.entries(strategy)
-            .map(([key, value]) => buildStrategySection(key, value))
+            .map(([key, value]) =>
+              buildStrategySection(key, value, {
+                getTitle: (sectionKey) => getStrategyTitleLabel(sectionKey, language),
+                getField: (fieldKey) => getStrategyFieldLabel(fieldKey, language),
+              })
+            )
             .filter((section): section is StrategySection => section !== null)
         : [],
-    [strategy]
+    [strategy, language]
   );
 
   const handleCreateRecommendation = async () => {
@@ -609,22 +685,20 @@ export default function MeasurementResultPage() {
           </div>
 
           <div className="space-y-3">
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-3xl font-black tracking-tight text-slate-900">{t("measureResult.title")}</h1>
-              <span className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold text-amber-700 bg-amber-100 border-amber-200">
-                <Sparkles className="mr-1 h-3.5 w-3.5" />
-                {isPremium ? t("measureResult.premiumBadge") : t("measureResult.quickBadge")}
-              </span>
-            </div>
-            <p className="text-base leading-relaxed text-slate-500">{t("measureResult.subtitle")}</p>
-            <p className="text-xs font-medium text-amber-700">{t("measureResult.measurementToleranceNotice")}</p>
-            <div>
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex min-w-0 flex-wrap items-center gap-3">
+                <h1 className="text-3xl font-black tracking-tight text-slate-900">{t("measureResult.title")}</h1>
+                <span className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold text-amber-700 bg-amber-100 border-amber-200">
+                  <Sparkles className="mr-1 h-3.5 w-3.5" />
+                  {isPremium ? t("measureResult.premiumBadge") : t("measureResult.quickBadge")}
+                </span>
+              </div>
               <Button
                 type="button"
                 variant="secondary"
                 onClick={handleShareResult}
                 disabled={isCreatingShareLink}
-                className="h-10 rounded-full px-5 text-sm font-bold"
+                className="h-10 shrink-0 rounded-full px-5 text-sm font-bold"
               >
                 {isCreatingShareLink ? (
                   <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
@@ -634,6 +708,8 @@ export default function MeasurementResultPage() {
                 <span>{t("measureResult.shareButton")}</span>
               </Button>
             </div>
+            <p className="text-base leading-relaxed text-slate-500">{t("measureResult.subtitle")}</p>
+            <p className="text-xs font-medium text-amber-700">{t("measureResult.measurementToleranceNotice")}</p>
           </div>
         </div>
 
@@ -732,7 +808,7 @@ export default function MeasurementResultPage() {
               <div className="space-y-5">
                 {calculations && (
                   <div>
-                    <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
+                    <h3 className={INSIGHT_SECTION_TITLE_CLASS}>
                       {t("measureResult.calculations")}
                     </h3>
                     <div className="grid gap-2 sm:grid-cols-2">
@@ -758,18 +834,21 @@ export default function MeasurementResultPage() {
 
                 {diagnosis && (
                   <div>
-                    <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
+                    <h3 className={INSIGHT_SECTION_TITLE_CLASS}>
                       {t("measureResult.diagnosis")}
                     </h3>
                     <div className="space-y-2">
                       {Object.entries(diagnosis).map(([key, value]) => {
                         const record = asRecord(value);
                         if (!record) return null;
+                        const analysis = meaningfulText(record.analysis);
+                        const direction = meaningfulText(record.style_direction);
+                        if (!analysis && !direction) return null;
                         return (
-                          <div key={key} className="rounded-lg border border-slate-200 bg-white px-3 py-3">
-                            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{prettyKey(key)}</p>
-                            <p className="mt-1 text-sm font-semibold text-slate-900">{asString(record.analysis) || "--"}</p>
-                            <p className="mt-1 text-xs text-slate-500">{asString(record.style_direction) || "--"}</p>
+                          <div key={key} className={INSIGHT_CARD_CLASS}>
+                            <p className="text-sm font-bold text-slate-800">{getDiagnosisTitleLabel(key, language)}</p>
+                            {analysis && <p className="mt-1.5 text-base leading-relaxed font-semibold text-slate-900">{analysis}</p>}
+                            {direction && <p className="mt-1 text-sm leading-relaxed text-slate-600">{direction}</p>}
                           </div>
                         );
                       })}
@@ -779,18 +858,19 @@ export default function MeasurementResultPage() {
 
                 {strategySections.length > 0 && (
                   <div>
-                    <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
+                    <h3 className={INSIGHT_SECTION_TITLE_CLASS}>
                       {t("measureResult.strategy")}
                     </h3>
                     <div className="space-y-2">
                       {strategySections.map((section) => (
-                        <div key={section.title} className="rounded-lg border border-slate-200 bg-white px-3 py-3">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{section.title}</p>
-                          <div className="mt-1 space-y-1">
-                            {section.lines.map((line) => (
-                              <p key={`${section.title}-${line.label}`} className="text-sm font-medium text-slate-700">
-                                <span className="font-semibold text-slate-900">{line.label}:</span> {line.value}
-                              </p>
+                        <div key={section.title} className={INSIGHT_CARD_CLASS}>
+                          <p className="text-sm font-bold text-slate-800">{section.title}</p>
+                          <div className="mt-2 space-y-1.5">
+                            {section.lines.map((line, lineIndex) => (
+                              <div key={`${section.title}-${lineIndex}`} className="grid grid-cols-[88px_1fr] items-start gap-2 text-sm sm:grid-cols-[96px_1fr]">
+                                <span className="font-semibold text-slate-600">{line.label}</span>
+                                <span className="leading-relaxed text-slate-800">{line.value}</span>
+                              </div>
                             ))}
                           </div>
                         </div>
@@ -801,19 +881,27 @@ export default function MeasurementResultPage() {
 
                 {outfitGuide.length > 0 && (
                   <div>
-                    <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
+                    <h3 className={INSIGHT_SECTION_TITLE_CLASS}>
                       {t("measureResult.outfitGuide")}
                     </h3>
                     <div className="space-y-2">
                       {outfitGuide.map((guide, index) => (
-                        <div key={`outfit-${index}`} className="rounded-lg border border-slate-200 bg-white px-3 py-3">
+                        <div key={`outfit-${index}`} className={INSIGHT_CARD_CLASS}>
                           <p className="text-sm font-semibold text-slate-900">{asString(guide.title) || `Outfit ${index + 1}`}</p>
-                          <p className="mt-1 text-xs text-slate-600">
-                            {asArray(guide.items).map((item) => asString(item)).filter(Boolean).join(", ") || "--"}
-                          </p>
-                          <p className="mt-1 text-xs text-slate-500">
-                            {asArray(guide.fit_notes).map((note) => asString(note)).filter(Boolean).join(" · ") || "--"}
-                          </p>
+                          <div className="mt-2 space-y-1.5 text-sm">
+                            <div className="grid grid-cols-[88px_1fr] items-start gap-2 sm:grid-cols-[96px_1fr]">
+                              <span className="font-semibold text-slate-600">{getOutfitFieldLabel("items", language)}</span>
+                              <span className="leading-relaxed text-slate-800">
+                                {asArray(guide.items).map((item) => asString(item)).filter(Boolean).join(", ") || "--"}
+                              </span>
+                            </div>
+                            <div className="grid grid-cols-[88px_1fr] items-start gap-2 sm:grid-cols-[96px_1fr]">
+                              <span className="font-semibold text-slate-600">{getOutfitFieldLabel("fitNotes", language)}</span>
+                              <span className="leading-relaxed text-slate-700">
+                                {asArray(guide.fit_notes).map((note) => asString(note)).filter(Boolean).join(" · ") || "--"}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>
