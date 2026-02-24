@@ -50,7 +50,14 @@ export default function PaymentPage() {
         ticketType: selectedTicketType,
         successUrl,
       });
-      window.location.href = response.checkoutUrl;
+      const checkoutUrl = response.checkoutUrl?.trim();
+      const isValidCheckoutUrl = /^https?:\/\//i.test(checkoutUrl ?? "");
+
+      if (!checkoutUrl || !isValidCheckoutUrl) {
+        throw new Error("유효한 결제 링크를 받지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      }
+
+      window.location.assign(checkoutUrl);
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("payment.checkoutError")));
       setIsCheckoutPending(false);

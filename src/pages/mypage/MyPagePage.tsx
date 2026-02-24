@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Accessibility,
@@ -8,11 +8,13 @@ import {
   Loader2,
   LogOut,
   Ruler,
+  Trash2,
   Zap,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { useMyPageSummary } from "@/features/mypage/hooks/useMyPage";
+import { useDeleteAnalyzeJobMutation } from "@/features/analyze/hooks/useAnalyze";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Card } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
@@ -63,6 +65,8 @@ export default function MyPagePage() {
   const { t, language } = useI18n();
   const logout = useAuthStore((state) => state.logout);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const [deletingJobId, setDeletingJobId] = useState<string | null>(null);
+  const deleteAnalyzeJobMutation = useDeleteAnalyzeJobMutation();
   const { data, isLoading, isError, refetch, isFetching } = useMyPageSummary({
     ticketSize: 20,
     analyzeSize: 20,
@@ -92,6 +96,23 @@ export default function MyPagePage() {
       navigate("/login", { replace: true });
     } catch {
       toast.error(t("mypage.logoutError"));
+    }
+  };
+
+  const handleDeleteJob = async (jobId: string) => {
+    const confirmed = window.confirm(t("mypage.deleteConfirm"));
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setDeletingJobId(jobId);
+      await deleteAnalyzeJobMutation.mutateAsync(jobId);
+      toast.success(t("mypage.deleteSuccess"));
+    } catch {
+      toast.error(t("mypage.deleteError"));
+    } finally {
+      setDeletingJobId(null);
     }
   };
 
@@ -188,6 +209,8 @@ export default function MyPagePage() {
             ) : (
               data.recentAnalyzeJobs.map((job) => {
                 const isQuick = job.mode === "QUICK_1VIEW";
+                const canDelete = job.status === "COMPLETED" || job.status === "FAILED";
+                const isDeleting = deletingJobId === job.jobId;
                 const targetPath =
                   job.status === "COMPLETED"
                     ? `/measure/result/${job.jobId}`
@@ -214,7 +237,24 @@ export default function MyPagePage() {
                       >
                         {getStatusLabel(job.status, t)}
                       </span>
-                      <ChevronRight className="h-5 w-5 text-slate-300 transition-colors group-hover:text-primary" />
+                      <div className="flex items-center gap-1.5">
+                        {canDelete && (
+                          <button
+                            type="button"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              void handleDeleteJob(job.jobId);
+                            }}
+                            disabled={isDeleting}
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-60"
+                            aria-label={t("mypage.delete")}
+                            title={t("mypage.delete")}
+                          >
+                            {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                          </button>
+                        )}
+                        <ChevronRight className="h-5 w-5 text-slate-300 transition-colors group-hover:text-primary" />
+                      </div>
                     </div>
                   </article>
                 );

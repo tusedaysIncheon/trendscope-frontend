@@ -347,25 +347,28 @@ export default function IndexPage() {
         </main>
 
         <footer className="mt-auto w-full border-t border-border py-6">
-          <div className="mx-auto max-w-[1200px] px-5 text-center">
-            <p className="text-xs text-slate-400">© 2026 Trendscope Inc.</p>
-            <div className="mt-3 flex justify-center gap-4 text-xs text-slate-500">
-              <Link to="/privacy" className="transition-colors hover:text-primary">
+          <div className="mx-auto max-w-[1200px] px-4 text-center sm:px-5">
+            <p className="text-xs text-slate-400">{t("common.footerCopyright")}</p>
+            <nav className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-slate-500 sm:gap-x-5">
+              <Link to="/privacy" className="whitespace-nowrap break-keep transition-colors hover:text-primary">
                 {t("common.privacy")}
               </Link>
-              <Link to="/terms" className="transition-colors hover:text-primary">
+              <Link to="/terms" className="whitespace-nowrap break-keep transition-colors hover:text-primary">
                 {t("common.terms")}
               </Link>
-              <Link to="/help" className="transition-colors hover:text-primary">
+              <Link to="/help" className="whitespace-nowrap break-keep transition-colors hover:text-primary">
                 {t("common.help")}
               </Link>
-              <Link to="/refund-policy" className="transition-colors hover:text-primary">
+              <Link to="/refund-policy" className="whitespace-nowrap break-keep transition-colors hover:text-primary">
                 {t("common.refundPolicy")}
               </Link>
-              <Link to="/open-source-notices" className="transition-colors hover:text-primary">
+              <Link
+                to="/open-source-notices"
+                className="whitespace-nowrap break-keep transition-colors hover:text-primary"
+              >
                 {t("common.openSourceNotices")}
               </Link>
-            </div>
+            </nav>
           </div>
         </footer>
       </div>

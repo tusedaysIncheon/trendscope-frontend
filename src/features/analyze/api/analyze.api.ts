@@ -67,6 +67,16 @@ export async function getMyAnalyzeJobs(size = 20): Promise<AnalyzeJobListRespons
   );
 }
 
+export async function deleteAnalyzeJob(jobId: string): Promise<boolean> {
+  return requestData<boolean>(
+    {
+      url: `/v1/analyze/jobs/${jobId}`,
+      method: "DELETE",
+    },
+    "측정 기록 삭제 중 오류가 발생했습니다."
+  );
+}
+
 export async function createAnalyzeShareLink(jobId: string): Promise<AnalyzeShareLinkResponse> {
   return requestData<AnalyzeShareLinkResponse>(
     {

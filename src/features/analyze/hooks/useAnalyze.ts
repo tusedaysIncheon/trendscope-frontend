@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createAnalyzeShareLink,
+  deleteAnalyzeJob,
   getAnalyzeJobStatus,
   getMyAnalyzeJobs,
   getSharedAnalyzeJob,
@@ -57,6 +58,21 @@ export function useSharedAnalyzeJob(shareToken: string | null) {
 export function useCreateAnalyzeShareLinkMutation() {
   return useMutation<AnalyzeShareLinkResponse, Error, string>({
     mutationFn: (jobId: string) => createAnalyzeShareLink(jobId),
+  });
+}
+
+export function useDeleteAnalyzeJobMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation<boolean, Error, string>({
+    mutationFn: (jobId: string) => deleteAnalyzeJob(jobId),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.analyze.root }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.mypage.root }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.measurement.root }),
+      ]);
+    },
   });
 }
 
