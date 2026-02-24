@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Accessibility,
   ArrowRight,
   ChevronRight,
   Crown,
@@ -223,7 +222,7 @@ export default function MyPagePage() {
                   >
                     <div className="flex items-center gap-4">
                       <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-50 text-primary transition-colors group-hover:bg-primary group-hover:text-white">
-                        {isQuick ? <Ruler className="h-5 w-5" /> : <Accessibility className="h-5 w-5" />}
+                        {isQuick ? <Ruler className="h-5 w-5" /> : <Crown className="h-5 w-5" />}
                       </div>
                       <div>
                         <h3 className="text-base font-bold text-slate-900">{getJobTitle(job, t)}</h3>
