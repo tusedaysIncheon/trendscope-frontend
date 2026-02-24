@@ -18,6 +18,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { Card } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import type { AnalyzeJobListItem } from "@/types/trendscope";
+import { SEO } from "@/shared/components/SEO";
 
 const LOCALE_BY_LANGUAGE = {
   ko: "ko-KR",
@@ -117,6 +118,7 @@ export default function MyPagePage() {
 
   return (
     <div className="font-['Inter',sans-serif] min-h-screen w-full bg-background">
+      <SEO title="마이페이지 - TrendScope" noindex={true} />
       <header className="sticky top-0 z-50 flex items-center justify-between border-b border-border bg-background px-3 py-3 sm:px-5 sm:py-4">
         <button
           type="button"

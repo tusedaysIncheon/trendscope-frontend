@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { LandingHeader } from "@/shared/layouts/headers/LandingHeader";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { LEGAL_CONTENT } from "@/lib/i18n/legalContent";
+import { SEO } from "@/shared/components/SEO";
 
 type NoticeItem = {
   name: string;
@@ -52,6 +53,7 @@ export default function OpenSourceNoticesPage() {
 
   return (
     <div className="font-['Inter',sans-serif] min-h-screen bg-background text-foreground">
+      <SEO title="오픈소스 고지 - TrendScope" />
       <div className="mx-auto flex min-h-screen w-full max-w-[960px] flex-col border-x border-border bg-background">
         <LandingHeader showCta={false} />
         <main className="flex-1 px-5 pb-10 pt-24 sm:px-8">

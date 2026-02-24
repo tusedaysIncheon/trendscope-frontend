@@ -8,6 +8,7 @@ import { useI18n } from "@/lib/i18n/I18nProvider";
 import { Card } from "@/shared/ui/card";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { MeasureFlowState } from "./types";
+import { SEO } from "@/shared/components/SEO";
 
 function isFileLike(value: unknown): value is File {
   return (
@@ -141,6 +142,7 @@ export default function MeasurementPhotoPage() {
 
   return (
     <div className="font-['Inter',sans-serif] flex min-h-screen w-full items-center justify-center bg-background px-0">
+      <SEO title="사진 선택 - TrendScope" noindex={true} />
       <div className="flex min-h-screen w-full max-w-[480px] flex-col border-x border-border bg-background text-foreground shadow-xl shadow-slate-300/40 lg:max-w-none lg:border-x-0 lg:shadow-none">
         <header className="mx-auto flex w-full max-w-[1200px] items-center justify-between px-4 py-4 sm:px-8">
           <div className="flex items-center gap-2">

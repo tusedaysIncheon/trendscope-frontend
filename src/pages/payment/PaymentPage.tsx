@@ -18,6 +18,7 @@ import { createCreemCheckout } from "@/features/payment/api/creem.api";
 import { useTicketSummary } from "@/features/tickets/hooks/useTicket";
 import { getApiErrorMessage } from "@/lib/api/error";
 import type { TicketType } from "@/types/trendscope";
+import { SEO } from "@/shared/components/SEO";
 
 const TICKET_PRICES: Record<TicketType, number> = {
   QUICK: 1.99,
@@ -66,6 +67,7 @@ export default function PaymentPage() {
 
   return (
     <div className="font-['Inter',sans-serif] min-h-screen w-full bg-background">
+      <SEO title="결제 - TrendScope" noindex={true} />
       <LandingHeader ctaPath="/profile" ctaLabelKey="common.myPage" />
 
       <main className="mx-auto w-full max-w-[1200px] px-4 py-8 sm:px-6 md:px-8">

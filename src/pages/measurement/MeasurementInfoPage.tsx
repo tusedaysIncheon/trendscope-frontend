@@ -7,6 +7,7 @@ import { Card } from "@/shared/ui/card";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { AnalyzeMode, Gender, MeasurementModel } from "@/types/trendscope";
 import type { MeasureFlowState } from "./types";
+import { SEO } from "@/shared/components/SEO";
 
 const HEIGHT_MIN_CM = 100;
 const HEIGHT_MAX_CM = 230;
@@ -110,6 +111,7 @@ export default function MeasurementInfoPage() {
 
   return (
     <div className="font-['Inter',sans-serif] flex min-h-screen w-full items-center justify-center bg-background px-0">
+      <SEO title="3D 체형 측정 - TrendScope" noindex={true} />
       <div className="flex min-h-screen w-full max-w-[480px] flex-col border-x border-border bg-background text-foreground shadow-xl shadow-slate-300/40 lg:max-w-none lg:border-x-0 lg:shadow-none">
         <header className="mx-auto flex w-full max-w-[1200px] items-center justify-between px-4 py-4 sm:px-8">
           <div className="flex items-center gap-2">

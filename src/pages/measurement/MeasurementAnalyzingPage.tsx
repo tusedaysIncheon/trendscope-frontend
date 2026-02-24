@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/i18n/I18nProvider";
 import { Card } from "@/shared/ui/card";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { AnalyzeJobStatus, MeasurementModel } from "@/types/trendscope";
+import { SEO } from "@/shared/components/SEO";
 
 const CIRCLE_CIRCUMFERENCE = 283;
 
@@ -70,6 +71,7 @@ function StepRow({
 
   return (
     <div className={`relative flex items-center gap-4 ${wrapperOpacity}`}>
+      <SEO title="측정 중 - TrendScope" noindex={true} />
       {withConnector && <div className="absolute -top-5 left-4 h-5 w-px bg-slate-200" />}
       <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${iconClass}`}>
         {state === "done" ? (

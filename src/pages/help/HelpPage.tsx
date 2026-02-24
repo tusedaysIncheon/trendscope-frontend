@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { LandingHeader } from "@/shared/layouts/headers/LandingHeader";
+import { SEO } from "@/shared/components/SEO";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { LEGAL_CONTENT } from "@/lib/i18n/legalContent";
 
@@ -9,6 +10,10 @@ export default function HelpPage() {
 
   return (
     <div className="font-['Inter',sans-serif] min-h-screen bg-background text-foreground">
+      <SEO
+        title="도움말 및 고객센터 - TrendScope"
+        description="TrendScope 3D 체형 분석 서비스 이용 방법과 자주 묻는 질문을 확인하세요."
+      />
       <div className="mx-auto flex min-h-screen w-full max-w-[960px] flex-col border-x border-border bg-background">
         <LandingHeader showCta={false} />
         <main className="flex-1 px-5 pb-10 pt-24 sm:px-8">

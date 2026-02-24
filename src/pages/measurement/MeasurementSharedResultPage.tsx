@@ -1,5 +1,6 @@
 import { ArrowRight, Loader2, Ruler } from "lucide-react";
 import { useMemo } from "react";
+import { SEO } from "@/shared/components/SEO";
 import { useNavigate, useParams } from "react-router-dom";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { useSharedAnalyzeJob } from "@/features/analyze/hooks/useAnalyze";
@@ -141,6 +142,10 @@ export default function MeasurementSharedResultPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title={`나의 3D 체형 분석 결과 - TrendScope`}
+        description="내 체형과 딱 맞는 패션 추천 결과를 확인해보세요! TrendScope AI 코디네이터."
+      />
       <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
         <div className="mx-auto flex h-16 w-full max-w-[1200px] items-center justify-between px-4 sm:px-8">
           <button

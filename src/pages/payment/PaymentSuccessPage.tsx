@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/i18n/I18nProvider";
 import { LandingHeader } from "@/shared/layouts/headers/LandingHeader";
 import { Card } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
+import { SEO } from "@/shared/components/SEO";
 
 export default function PaymentSuccessPage() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ export default function PaymentSuccessPage() {
 
   return (
     <div className="font-['Inter',sans-serif] min-h-screen w-full bg-background">
+      <SEO title="결제 완료 - TrendScope" noindex={true} />
       <LandingHeader ctaPath="/profile" ctaLabelKey="common.myPage" />
 
       <main className="mx-auto flex min-h-[calc(100vh-72px)] w-full max-w-[1200px] items-center justify-center px-4 py-10 sm:px-6 md:px-8">

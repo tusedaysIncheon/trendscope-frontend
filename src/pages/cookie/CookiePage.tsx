@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { getDeviceId } from "@/lib/utils";
 import { getUserLoadInfo } from "@/features/user/api/user.api";
 import { useQueryClient } from "@tanstack/react-query";
+import { SEO } from "@/shared/components/SEO";
 
 const BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
@@ -70,6 +71,7 @@ function CookiePage() {
       contentClassName="items-center text-center gap-4"
       className="md:py-16"
     >
+      <SEO title="쿠키 설정 - TrendScope" noindex={true} />
       <h1 className="text-2xl font-semibold">로그인 처리 중입니다</h1>
       <p className="text-sm text-muted-foreground">
         잠시만 기다려 주세요. 자동으로 다음 페이지로 이동합니다.

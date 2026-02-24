@@ -6,12 +6,12 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { I18nProvider } from './lib/i18n/I18nProvider'
 
 export const queryClient = new QueryClient({
-    defaultOptions:{
-        queries : {
-            retry: 0,
-            refetchOnWindowFocus: false,
-        },
+  defaultOptions: {
+    queries: {
+      retry: 0,
+      refetchOnWindowFocus: false,
     },
+  },
 })
 
 declare global {
@@ -29,16 +29,17 @@ if (!container) {
 const root = window.__TRENDSCOPE_ROOT__ ?? createRoot(container);
 window.__TRENDSCOPE_ROOT__ = root;
 
-root.render(
- 
-    <QueryClientProvider client = {queryClient}>
-        <I18nProvider>
-          <App />
-        </I18nProvider>
+import { HelmetProvider } from 'react-helmet-async';
 
-        <ReactQueryDevtools initialIsOpen={false} buttonPosition='bottom-right' />
+root.render(
+  <HelmetProvider>
+    <QueryClientProvider client={queryClient}>
+      <I18nProvider>
+        <App />
+      </I18nProvider>
+
+      <ReactQueryDevtools initialIsOpen={false} buttonPosition='bottom-right' />
 
     </QueryClientProvider>
-   
- 
+  </HelmetProvider>
 )

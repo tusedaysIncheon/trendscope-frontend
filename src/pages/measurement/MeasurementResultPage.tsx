@@ -24,6 +24,7 @@ import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { getFullImageUrl } from "@/shared/utils/image";
 import { useAuthStore } from "@/store/useAuthStore";
+import { SEO } from "@/shared/components/SEO";
 import type {
   AnalyzeResultPayload,
   FashionRecommendationRequest,
@@ -480,13 +481,13 @@ export default function MeasurementResultPage() {
     () =>
       strategy
         ? Object.entries(strategy)
-            .map(([key, value]) =>
-              buildStrategySection(key, value, {
-                getTitle: (sectionKey) => getStrategyTitleLabel(sectionKey, language),
-                getField: (fieldKey) => getStrategyFieldLabel(fieldKey, language),
-              })
-            )
-            .filter((section): section is StrategySection => section !== null)
+          .map(([key, value]) =>
+            buildStrategySection(key, value, {
+              getTitle: (sectionKey) => getStrategyTitleLabel(sectionKey, language),
+              getField: (fieldKey) => getStrategyFieldLabel(fieldKey, language),
+            })
+          )
+          .filter((section): section is StrategySection => section !== null)
         : [],
     [strategy, language]
   );
@@ -647,6 +648,7 @@ export default function MeasurementResultPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="나의 측정 결과 - TrendScope" noindex={true} />
       <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
         <div className="mx-auto flex h-16 w-full max-w-[1200px] items-center justify-between px-4 sm:px-8">
           <button

@@ -9,6 +9,7 @@ import { getApiErrorMessage } from "@/lib/api/error";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { LandingHeader } from "@/shared/layouts/headers/LandingHeader";
 import { useAuthStore } from "@/store/useAuthStore";
+import { SEO } from "@/shared/components/SEO";
 
 const OTP_LENGTH = 6;
 const OTP_EXPIRE_SECONDS = 5 * 60;
@@ -177,6 +178,7 @@ export default function EmailOtpVerifyPage() {
 
   return (
     <div className="font-['Inter',sans-serif] flex min-h-screen w-full items-center justify-center bg-background px-0">
+      <SEO title="인증완료 - TrendScope" noindex={true} />
       <div className="flex min-h-screen w-full max-w-[480px] flex-col border-x border-border bg-background text-foreground shadow-xl shadow-slate-300/40 lg:max-w-none lg:border-x-0 lg:shadow-none">
         <LandingHeader showCta={false} />
 

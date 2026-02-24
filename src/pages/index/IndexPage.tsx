@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { SEO } from "@/shared/components/SEO";
 import { Crown, EyeOff, Ruler, ShieldCheck, Shirt, Sparkles, Zap } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
@@ -108,6 +109,10 @@ export default function IndexPage() {
 
   return (
     <div className="font-['Inter',sans-serif] flex min-h-screen w-full items-center justify-center bg-background px-0">
+      <SEO
+        title={t("landing.titleLine1Before3d") ? `TrendScope - ${t("landing.titleLine2")}` : "TrendScope - 3D 체형 분석 및 AI 패션 스타일링"}
+        description="스마트폰 사진 2장으로 내 몸을 3D로 측정하고 완벽한 핏의 패션을 추천받으세요. TrendScope AI 코디네이터."
+      />
       <Dialog
         open={isFirstVisitPromoOpen}
         onOpenChange={(open) => {
@@ -214,11 +219,10 @@ export default function IndexPage() {
                   <span className="block text-slate-900">{t("landing.titleLine2")}</span>
                 </h1>
                 <p
-                  className={`font-medium text-slate-600 ${
-                    isKorean
-                      ? "text-[13px] leading-[1.5] tracking-[-0.01em] sm:text-base sm:tracking-normal"
-                      : "text-base leading-relaxed"
-                  }`}
+                  className={`font-medium text-slate-600 ${isKorean
+                    ? "text-[13px] leading-[1.5] tracking-[-0.01em] sm:text-base sm:tracking-normal"
+                    : "text-base leading-relaxed"
+                    }`}
                 >
                   <span className={`block ${isKorean ? "whitespace-nowrap" : ""}`}>{t("landing.subtitleLine1")}</span>
                   <span className={`block ${isKorean ? "whitespace-nowrap" : ""}`}>{t("landing.subtitleLine2")}</span>

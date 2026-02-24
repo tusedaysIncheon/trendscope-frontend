@@ -48,6 +48,7 @@ import { saveUserDetails } from "@/features/user/api/user.api";
 import { getPresignedUrlAPI, uploadToS3 } from "@/shared/api/file.api";
 import { queryClient } from "@/main";
 import { getApiErrorMessage } from "@/lib/api/error";
+import { SEO } from "@/shared/components/SEO";
 
 // --- 1. Zod 스키마 정의 ---
 const profileSchema = z.object({
@@ -172,6 +173,7 @@ export default function ProfileSetupPage() {
       contentWidth="md"
       className="animate-in fade-in slide-in-from-bottom-4 duration-500"
     >
+      <SEO title="프로필 설정 - TrendScope" noindex={true} />
       <Card className="w-full max-w-lg mx-auto shadow-xl border-t-4 border-t-primary">
         <CardHeader className="text-center space-y-2 pb-8">
           <CardTitle className="text-2xl font-bold">
