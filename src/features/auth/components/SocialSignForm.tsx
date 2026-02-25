@@ -1,11 +1,11 @@
 import { FcGoogle } from "react-icons/fc"
-import { SiNaver } from "react-icons/si"
+// import { SiNaver } from "react-icons/si"
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 export function SocialLoginSection() {
 
-    const handleSocialLogin = (provider : string) =>{
+  const handleSocialLogin = (provider: string) => {
     window.location.href = `${API_BASE_URL}/oauth2/authorization/${provider}`;
   }
 
@@ -23,13 +23,13 @@ export function SocialLoginSection() {
           <FcGoogle className="text-2xl" />
         </button>
 
-        {/* Naver */}
-        <button
+        {/* Naver (임시 비활성화 - 사업자등록 필요) */}
+        {/* <button
           onClick={ () => handleSocialLogin("naver")}
           className="flex items-center justify-center w-10 h-10 rounded-md border bg-[#03C75A] hover:bg-[#04b04f] shadow-sm"
         >
           <SiNaver className="text-white text-lg" />
-        </button>
+        </button> */}
       </div>
 
       {/* 구분선 */}

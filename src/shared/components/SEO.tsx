@@ -12,14 +12,14 @@ export function SEO({
   title,
   description = '스마트폰 사진 2장으로 내 몸을 3D로 측정하고 완벽한 핏의 패션을 추천받으세요. TrendScope AI 코디네이터.',
   ogImage = '/logo1.png',
-  ogUrl = 'https://trendscope.app', // 실제 배포 도메인에 맞춰 조정 필요
+  ogUrl = 'https://trend-scope.net', // 실제 배포 도메인에 맞춰 조정 필요
   noindex = false,
 }: SEOProps) {
   return (
     <Helmet>
       <title>{title}</title>
       <meta name="description" content={description} />
-      
+
       {/* Open Graph */}
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
