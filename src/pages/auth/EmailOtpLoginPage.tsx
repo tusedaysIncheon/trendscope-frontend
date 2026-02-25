@@ -1,5 +1,5 @@
 import { ArrowRight, Info, Mail } from "lucide-react";
-import { SiNaver } from "react-icons/si";
+// import { SiNaver } from "react-icons/si";
 import { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -153,14 +153,15 @@ export default function EmailOtpLoginPage() {
                 <span className="whitespace-nowrap leading-none">{t("loginPage.continueGoogle")}</span>
               </button>
 
-              <button
+              {/* Naver (임시 비활성화 - 사업자등록 필요) */}
+              {/* <button
                 type="button"
                 onClick={() => handleSocialLogin("naver")}
                 className="flex h-10 min-w-0 items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-2 text-[12px] font-medium text-slate-700 transition-colors hover:bg-slate-50 sm:gap-2 sm:px-4 sm:text-sm"
               >
                 <SiNaver className="text-sm text-[#03C75A]" />
                 <span className="whitespace-nowrap leading-none">{t("loginPage.continueNaver")}</span>
-              </button>
+              </button> */}
             </div>
           </div>
         </main>

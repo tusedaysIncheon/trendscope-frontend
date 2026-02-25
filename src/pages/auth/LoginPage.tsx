@@ -1,5 +1,5 @@
 import { Mail } from "lucide-react";
-import { SiNaver } from "react-icons/si";
+// import { SiNaver } from "react-icons/si";
 import { Link, useNavigate } from "react-router-dom";
 import { Card } from "@/shared/ui/card";
 import { useI18n } from "@/lib/i18n/I18nProvider";
@@ -33,7 +33,8 @@ export default function LoginPage() {
             </div>
 
             <Card className="gap-3 rounded-3xl border border-border bg-white p-4 shadow-lg shadow-slate-200/40">
-              <button
+              {/* Naver (임시 비활성화 - 사업자등록 필요) */}
+              {/* <button
                 type="button"
                 onClick={() => handleSocialLogin("naver")}
                 className="relative flex h-14 w-full items-center justify-center rounded-full bg-[#03C75A] text-[15px] font-semibold text-white transition-all duration-200 hover:bg-[#02b351] active:scale-[0.99]"
@@ -42,7 +43,7 @@ export default function LoginPage() {
                   <SiNaver className="text-base" />
                 </span>
                 <span>{t("loginPage.continueNaver")}</span>
-              </button>
+              </button> */}
 
               <button
                 type="button"
