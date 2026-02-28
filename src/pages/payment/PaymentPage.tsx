@@ -46,7 +46,14 @@ export default function PaymentPage() {
   const handleCheckout = async () => {
     try {
       setIsCheckoutPending(true);
-      const successUrl = `${window.location.origin}/payment/success`;
+      const successUrlObject = new URL("/payment/success", window.location.origin);
+      const conversionRef = globalThis.crypto?.randomUUID?.() ?? `conv_${Date.now()}`;
+      successUrlObject.searchParams.set("ticketType", selectedTicketType);
+      successUrlObject.searchParams.set("value", selectedPrice.toFixed(2));
+      successUrlObject.searchParams.set("currency", "USD");
+      successUrlObject.searchParams.set("conversionRef", conversionRef);
+      const successUrl = successUrlObject.toString();
+
       const response = await createCreemCheckout({
         ticketType: selectedTicketType,
         successUrl,
@@ -58,6 +65,7 @@ export default function PaymentPage() {
         throw new Error("유효한 결제 링크를 받지 못했습니다. 잠시 후 다시 시도해 주세요.");
       }
 
+      window.localStorage.setItem("trendscope.pendingCheckoutConversionRef", conversionRef);
       window.location.assign(checkoutUrl);
     } catch (error) {
       toast.error(getApiErrorMessage(error, t("payment.checkoutError")));

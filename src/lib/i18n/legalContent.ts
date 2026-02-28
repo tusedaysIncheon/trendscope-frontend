@@ -136,6 +136,7 @@ export const LEGAL_CONTENT: Record<Language, LegalContent> = {
         "사진 기반 신체 측정 결과 및 3D 모델 생성/제공",
         "AI 스타일 추천 생성 및 이력 조회 제공",
         "결제 확인, 티켓 적립·차감·환불(복구) 처리",
+        "쿠키 동의 상태 관리 및 광고 성과(전환) 측정",
         "장애 대응, 보안 모니터링, 부정 이용 방지",
       ],
       section2Title: "2. 수집 항목",
@@ -149,6 +150,11 @@ export const LEGAL_CONTENT: Record<Language, LegalContent> = {
           title: "세션 정보",
           description:
             "액세스 토큰은 서버 저장 없이 검증에 사용하고, 리프레시 토큰은 안전한 내부 저장소 및 캐시 서버를 통하여 관리합니다.",
+        },
+        {
+          title: "쿠키/동의 정보",
+          description:
+            "Cookiebot 배너를 통해 쿠키 카테고리(필수/통계/마케팅) 동의 상태와 갱신 이력을 처리하며, 동의 상태에 따라 태그 동작을 제어합니다.",
         },
         {
           title: "프로필 정보",
@@ -190,6 +196,8 @@ export const LEGAL_CONTENT: Record<Language, LegalContent> = {
         ["AI 연산/파이프라인 처리 업체", "신체 측정 파이프라인 실행"],
         ["OpenAI", "스타일 추천 생성"],
         ["외부 결제 대행사(PG)", "결제 처리 및 결제 상태 확인"],
+        ["Cookiebot by Usercentrics", "쿠키 동의 배너 노출 및 동의 상태 관리(Consent Mode 신호 포함)"],
+        ["Google Ads (Google tag)", "광고 유입 및 전환 성과 측정(동의 기반)"],
         ["Google/Naver/Kakao", "소셜 로그인 인증"],
       ],
       section4Notice: "회사는 법령상 근거 또는 이용자 동의가 있는 경우를 제외하고 개인정보를 임의로 제3자에게 제공하지 않습니다.",
@@ -198,6 +206,7 @@ export const LEGAL_CONTENT: Record<Language, LegalContent> = {
         "보유기간 경과 또는 목적 달성 시 지체 없이 파기합니다.",
         "전자파일은 복구가 어려운 방식으로 즉각 삭제하며, 기록된 데이터베이스 상의 참조 정보도 안전하게 지웁니다.",
         "표준화된 토큰 기반 인증, 권한 통제, 비정상적 로그인 시도 제한, 결제 요청 검증을 적용합니다.",
+        "광고·분석 태그는 이용자 동의 상태를 기준으로 동작하며, 동의 철회 시 관련 저장소 접근을 제한합니다.",
         "인증 토큰은 업계 표준의 보안 쿠키 및 안전한 세션 관리 도구를 사용하여 통제합니다.",
       ],
       section6Title: "6. 이용자 권리 및 문의",
@@ -358,6 +367,20 @@ export const LEGAL_CONTENT: Record<Language, LegalContent> = {
           link: "https://www.cloudflare.com/terms/",
         },
         {
+          name: "Cookiebot by Usercentrics",
+          provider: "Usercentrics A/S",
+          purpose: "쿠키 동의 배너 제공 및 Consent Mode 신호 관리",
+          license: "Usercentrics/Cookiebot Terms",
+          link: "https://www.cookiebot.com/en/terms-and-conditions/",
+        },
+        {
+          name: "Google Ads (Google tag)",
+          provider: "Google LLC",
+          purpose: "광고 유입/전환 성과 측정",
+          license: "Google Ads Terms",
+          link: "https://support.google.com/adspolicy/answer/54818",
+        },
+        {
           name: "Creem",
           provider: "Creem",
           purpose: "결제 처리(Merchant of Record)",
@@ -432,6 +455,7 @@ export const LEGAL_CONTENT: Record<Language, LegalContent> = {
         "Photo-based body measurement and 3D model generation/delivery",
         "AI styling recommendation generation and history lookup",
         "Payment verification and ticket accrual/deduction/refund(recovery)",
+        "Cookie consent management and advertising conversion measurement",
         "Incident response, security monitoring, abuse prevention",
       ],
       section2Title: "2. Data Collected",
@@ -445,6 +469,11 @@ export const LEGAL_CONTENT: Record<Language, LegalContent> = {
           title: "Session Data",
           description:
             "Access tokens are validated statelessly; refresh tokens are managed through secure internal storage and cache servers.",
+        },
+        {
+          title: "Cookie/Consent Data",
+          description:
+            "Through the Cookiebot banner, we process cookie category consent status (required/statistics/marketing) and consent update history to control tag behavior.",
         },
         {
           title: "Profile Data",
@@ -486,6 +515,8 @@ export const LEGAL_CONTENT: Record<Language, LegalContent> = {
         ["AI Pipeline Processing Providers", "Body measurement pipeline execution"],
         ["OpenAI", "Style recommendation generation"],
         ["Payment Gateway", "Payment processing and status verification"],
+        ["Cookiebot by Usercentrics", "Cookie consent banner and consent state management (including Consent Mode signals)"],
+        ["Google Ads (Google tag)", "Ad traffic and conversion performance measurement (consent-based)"],
         ["Google/Naver/Kakao", "Social login authentication"],
       ],
       section4Notice:
@@ -495,6 +526,7 @@ export const LEGAL_CONTENT: Record<Language, LegalContent> = {
         "Data is deleted without delay when retention expires or processing purpose is fulfilled.",
         "Electronic files are removed in a non-recoverable manner, and database references are securely erased.",
         "Standardized token-based authentication, role-based authorization, OTP attempt limits, and payment request verification are applied.",
+        "Advertising/analytics tags operate based on user consent status, and related storage access is restricted after consent withdrawal.",
         "Authentication tokens are managed via industry-standard secure cookies and secure session management tools.",
       ],
       section6Title: "6. User Rights and Contact",
@@ -658,6 +690,20 @@ export const LEGAL_CONTENT: Record<Language, LegalContent> = {
           link: "https://www.cloudflare.com/terms/",
         },
         {
+          name: "Cookiebot by Usercentrics",
+          provider: "Usercentrics A/S",
+          purpose: "Cookie consent banner and Consent Mode signal management",
+          license: "Usercentrics/Cookiebot Terms",
+          link: "https://www.cookiebot.com/en/terms-and-conditions/",
+        },
+        {
+          name: "Google Ads (Google tag)",
+          provider: "Google LLC",
+          purpose: "Ad traffic and conversion performance measurement",
+          license: "Google Ads Terms",
+          link: "https://support.google.com/adspolicy/answer/54818",
+        },
+        {
           name: "Creem",
           provider: "Creem",
           purpose: "Payment processing (Merchant of Record)",
@@ -732,6 +778,7 @@ export const LEGAL_CONTENT: Record<Language, LegalContent> = {
         "写真ベースの身体計測と3Dモデル生成/提供",
         "AIスタイル提案の生成および履歴提供",
         "決済確認、チケット付与・差引・返金(復元)処理",
+        "Cookie同意状態の管理および広告コンバージョン測定",
         "障害対応、セキュリティ監視、不正利用防止",
       ],
       section2Title: "2. 取得項目",
@@ -743,6 +790,11 @@ export const LEGAL_CONTENT: Record<Language, LegalContent> = {
         {
           title: "セッション情報",
           description: "アクセストークンはサーバー保存せず検証に使用し、リフレッシュトークンは安全な内部ストレージおよびキャッシュサーバーを通じて管理されます。",
+        },
+        {
+          title: "Cookie/同意情報",
+          description:
+            "Cookiebotバナーを通じて、Cookieカテゴリ（必須/統計/マーケティング）の同意状態および更新履歴を処理し、同意状態に応じてタグ動作を制御します。",
         },
         {
           title: "プロフィール情報",
@@ -783,6 +835,8 @@ export const LEGAL_CONTENT: Record<Language, LegalContent> = {
         ["AIパイプライン処理業者", "身体計測パイプライン実行"],
         ["OpenAI", "スタイル提案生成"],
         ["外部決済代行会社(PG)", "決済処理および状態確認"],
+        ["Cookiebot by Usercentrics", "Cookie同意バナー表示および同意状態管理（Consent Mode信号を含む）"],
+        ["Google Ads (Google tag)", "広告流入およびコンバージョン成果測定（同意ベース）"],
         ["Google/Naver/Kakao", "ソーシャルログイン認証"],
       ],
       section4Notice: "法令上の根拠または利用者同意がある場合を除き、個人情報を任意に第三者提供しません。",
@@ -791,6 +845,7 @@ export const LEGAL_CONTENT: Record<Language, LegalContent> = {
         "保有期間満了または目的達成時に遅滞なく廃棄します。",
         "電子ファイルは復元困難な方法で即時削除し、データベース上の参照情報も安全に消去します。",
         "標準化されたトークンベース認証、権限管理、不正なログイン試行の制限、決済リクエスト検証を適用します。",
+        "広告・分析タグは利用者の同意状態に基づいて動作し、同意撤回時には関連ストレージへのアクセスを制限します。",
         "認証トークンは業界標準のセキュアクッキーおよび安全なセッション管理ツールを使用して統制します。",
       ],
       section6Title: "6. 利用者の権利とお問い合わせ",
@@ -949,6 +1004,20 @@ export const LEGAL_CONTENT: Record<Language, LegalContent> = {
           link: "https://www.cloudflare.com/terms/",
         },
         {
+          name: "Cookiebot by Usercentrics",
+          provider: "Usercentrics A/S",
+          purpose: "Cookie同意バナー提供およびConsent Mode信号管理",
+          license: "Usercentrics/Cookiebot Terms",
+          link: "https://www.cookiebot.com/en/terms-and-conditions/",
+        },
+        {
+          name: "Google Ads (Google tag)",
+          provider: "Google LLC",
+          purpose: "広告流入/コンバージョン成果測定",
+          license: "Google Ads Terms",
+          link: "https://support.google.com/adspolicy/answer/54818",
+        },
+        {
           name: "Creem",
           provider: "Creem",
           purpose: "決済処理（Merchant of Record）",
@@ -1023,6 +1092,7 @@ export const LEGAL_CONTENT: Record<Language, LegalContent> = {
         "基于照片的身体测量与 3D 模型生成/提供",
         "AI 穿搭推荐生成与历史记录查询",
         "支付确认、票券发放/扣减/退款（恢复）处理",
+        "Cookie 同意状态管理与广告转化效果测量",
         "故障应对、安全监控与防止滥用",
       ],
       section2Title: "2. 收集项目",
@@ -1034,6 +1104,10 @@ export const LEGAL_CONTENT: Record<Language, LegalContent> = {
         {
           title: "会话信息",
           description: "访问令牌采用无状态校验；刷新令牌按用户/设备维度存储在 Redis 中。",
+        },
+        {
+          title: "Cookie/同意信息",
+          description: "通过 Cookiebot 横幅处理 Cookie 分类（必要/统计/营销）的同意状态与更新记录，并按同意状态控制标签行为。",
         },
         {
           title: "个人资料",
@@ -1074,6 +1148,8 @@ export const LEGAL_CONTENT: Record<Language, LegalContent> = {
         ["Modal", "身体测量流水线执行"],
         ["OpenAI", "穿搭推荐生成"],
         ["Creem", "支付处理与支付状态确认"],
+        ["Cookiebot by Usercentrics", "Cookie 同意横幅展示与同意状态管理（含 Consent Mode 信号）"],
+        ["Google Ads (Google tag)", "广告流量与转化效果测量（基于同意）"],
         ["Google/Naver/Kakao", "社交登录认证"],
       ],
       section4Notice: "除法律依据或获得用户同意外，我们不会任意向第三方提供个人信息。",
@@ -1082,6 +1158,7 @@ export const LEGAL_CONTENT: Record<Language, LegalContent> = {
         "超过保存期限或处理目的达成后，将及时删除。",
         "电子文件采用不可恢复方式删除；S3 对象删除后同步清理数据库引用。",
         "采用 JWT 认证、基于角色的授权、OTP 尝试限制、支付 webhook 签名校验。",
+        "广告/统计标签基于用户同意状态运行，撤回同意后将限制相关存储访问。",
         "刷新令牌通过 HttpOnly Cookie 与 Redis 进行管理。",
       ],
       section6Title: "6. 用户权利与咨询",
@@ -1238,6 +1315,20 @@ export const LEGAL_CONTENT: Record<Language, LegalContent> = {
           purpose: "DNS 与域名管理",
           license: "Cloudflare Terms of Use",
           link: "https://www.cloudflare.com/terms/",
+        },
+        {
+          name: "Cookiebot by Usercentrics",
+          provider: "Usercentrics A/S",
+          purpose: "Cookie 同意横幅与 Consent Mode 信号管理",
+          license: "Usercentrics/Cookiebot Terms",
+          link: "https://www.cookiebot.com/en/terms-and-conditions/",
+        },
+        {
+          name: "Google Ads (Google tag)",
+          provider: "Google LLC",
+          purpose: "广告流量与转化效果测量",
+          license: "Google Ads Terms",
+          link: "https://support.google.com/adspolicy/answer/54818",
         },
         {
           name: "Creem",

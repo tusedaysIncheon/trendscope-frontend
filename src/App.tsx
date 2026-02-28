@@ -12,6 +12,7 @@ import CookiePage from "./pages/cookie/CookiePage";
 import ProfileSetupPage from "./pages/auth/ProfileSetupPage";
 import PaymentPage from "./pages/payment/PaymentPage";
 import PaymentSuccessPage from "./pages/payment/PaymentSuccessPage";
+import PaymentHistoryPage from "./pages/payment/PaymentHistoryPage";
 import MyPagePage from "./pages/mypage/MyPagePage";
 import MeasurementInfoPage from "./pages/measurement/MeasurementInfoPage";
 import MeasurementPhotoPage from "./pages/measurement/MeasurementPhotoPage";
@@ -56,6 +57,7 @@ function AppRoutes() {
       <Route path="/profile-setup" element={<ProfileSetupPage />} />
       <Route path="/profile" element={<MyPagePage />} />
       <Route path="/payment" element={<PaymentPage />} />
+      <Route path="/payment/history" element={<PaymentHistoryPage />} />
       <Route path="/payment/success" element={<PaymentSuccessPage />} />
       <Route path="/measure/info" element={<MeasurementInfoPage />} />
       <Route path="/measure/photos" element={<MeasurementPhotoPage />} />

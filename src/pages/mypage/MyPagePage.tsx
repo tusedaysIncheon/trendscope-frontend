@@ -6,6 +6,7 @@ import {
   Crown,
   Loader2,
   LogOut,
+  ReceiptText,
   Ruler,
   Trash2,
   Zap,
@@ -162,7 +163,15 @@ export default function MyPagePage() {
             </div>
           </div>
 
-          <div className="mt-5 flex justify-center">
+          <div className="mt-5 flex flex-col justify-center gap-2">
+            <Button
+              variant="outline"
+              className="h-11 w-full rounded-full border-slate-200 bg-white px-8 text-sm font-bold text-slate-700 hover:bg-slate-50"
+              onClick={() => navigate("/payment/history")}
+            >
+              <ReceiptText className="mr-1.5 h-4 w-4" />
+              {t("mypage.purchaseHistory")}
+            </Button>
             <Button
               className="h-12 w-full rounded-full px-8 text-sm font-bold shadow-lg shadow-blue-200"
               onClick={() => navigate("/payment")}
