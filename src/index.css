@@ -185,3 +185,8 @@
     min-height: 100vh;
   }
 }
+
+/* Cookiebot floating re-open icon is hidden; use in-app "Cookie Settings" link instead. */
+#CookiebotWidget {
+  display: none !important;
+}

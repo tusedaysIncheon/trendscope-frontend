@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/i18n/I18nProvider";
 import { LandingHeader } from "@/shared/layouts/headers/LandingHeader";
 import { SEO } from "@/shared/components/SEO";
 import { getBackendApiBaseUrl } from "@/lib/config/runtime";
+import { openCookieSettings } from "@/lib/cookiebot";
 
 const API_BASE_URL = getBackendApiBaseUrl();
 
@@ -107,6 +108,14 @@ export default function LoginPage() {
                   {t("common.privacy")}
                 </Link>
                 {t("loginPage.termsSuffix")}
+                <span className="mx-1 text-slate-300">·</span>
+                <button
+                  type="button"
+                  onClick={openCookieSettings}
+                  className="text-primary transition-colors hover:text-blue-600 hover:underline"
+                >
+                  {t("common.cookieSettings")}
+                </button>
               </p>
             </div>
           </div>

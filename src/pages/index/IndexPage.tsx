@@ -18,6 +18,7 @@ import { LandingHeader } from "@/shared/layouts/headers/LandingHeader";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useTicketSummary } from "@/features/tickets/hooks/useTicket";
 import { useUser } from "@/features/user/hooks/useUser";
+import { openCookieSettings } from "@/lib/cookiebot";
 
 const FIRST_VISIT_PROMO_KEY = "trendscope:first-visit-promo:v1";
 const WELCOME_QUICK_TICKET_KEY_PREFIX = "trendscope:welcome-quick-ticket:v1:";
@@ -372,6 +373,13 @@ export default function IndexPage() {
               >
                 {t("common.openSourceNotices")}
               </Link>
+              <button
+                type="button"
+                onClick={openCookieSettings}
+                className="whitespace-nowrap break-keep transition-colors hover:text-primary"
+              >
+                {t("common.cookieSettings")}
+              </button>
             </nav>
           </div>
         </footer>
