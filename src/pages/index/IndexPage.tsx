@@ -22,6 +22,7 @@ import { openCookieSettings } from "@/lib/cookiebot";
 
 const FIRST_VISIT_PROMO_KEY = "trendscope:first-visit-promo:v1";
 const WELCOME_QUICK_TICKET_KEY_PREFIX = "trendscope:welcome-quick-ticket:v1:";
+const SITE_URL = "https://trend-scope.net";
 
 export default function IndexPage() {
   const navigate = useNavigate();
@@ -113,6 +114,23 @@ export default function IndexPage() {
       <SEO
         title={t("landing.titleLine1Before3d") ? `TrendScope - ${t("landing.titleLine2")}` : "TrendScope - 3D 체형 분석 및 AI 패션 스타일링"}
         description="스마트폰 사진 2장으로 내 몸을 3D로 측정하고 완벽한 핏의 패션을 추천받으세요. TrendScope AI 코디네이터."
+        canonicalUrl="/"
+        structuredData={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "TrendScope",
+            url: SITE_URL,
+            logo: `${SITE_URL}/logo1.png`,
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "TrendScope",
+            url: SITE_URL,
+            inLanguage: ["ko", "en", "ja", "zh"],
+          },
+        ]}
       />
       <Dialog
         open={isFirstVisitPromoOpen}

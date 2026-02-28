@@ -1,40 +1,110 @@
-import { Helmet } from 'react-helmet-async';
+import { Helmet } from "react-helmet-async";
 
 interface SEOProps {
   title: string;
   description?: string;
   ogImage?: string;
   ogUrl?: string;
+  canonicalUrl?: string;
+  structuredData?: Record<string, unknown> | Array<Record<string, unknown>>;
   noindex?: boolean;
+}
+
+const DEFAULT_SITE_URL = "https://trend-scope.net";
+const DEFAULT_DESCRIPTION =
+  "스마트폰 사진 2장으로 내 몸을 3D로 측정하고 완벽한 핏의 패션을 추천받으세요. TrendScope AI 코디네이터.";
+const DEFAULT_OG_IMAGE = "/logo1.png";
+const OG_LOCALE_MAP: Record<string, string> = {
+  ko: "ko_KR",
+  en: "en_US",
+  ja: "ja_JP",
+  zh: "zh_CN",
+};
+
+function trimTrailingSlash(value: string) {
+  return value.replace(/\/+$/, "");
+}
+
+function resolveSiteUrl() {
+  const envValue = (import.meta.env.VITE_SITE_URL as string | undefined)?.trim();
+  if (envValue) {
+    return trimTrailingSlash(envValue);
+  }
+  return DEFAULT_SITE_URL;
+}
+
+function toAbsoluteUrl(url: string, siteUrl: string) {
+  if (/^https?:\/\//i.test(url)) {
+    return url;
+  }
+
+  const path = url.startsWith("/") ? url : `/${url}`;
+  return `${siteUrl}${path}`;
+}
+
+function resolvePagePath() {
+  if (typeof window === "undefined") {
+    return "/";
+  }
+  return window.location.pathname || "/";
+}
+
+function resolveOgLocale() {
+  if (typeof document === "undefined") {
+    return OG_LOCALE_MAP.ko;
+  }
+
+  const lang = (document.documentElement.lang || "ko").toLowerCase();
+  return OG_LOCALE_MAP[lang] ?? OG_LOCALE_MAP.ko;
 }
 
 export function SEO({
   title,
-  description = '스마트폰 사진 2장으로 내 몸을 3D로 측정하고 완벽한 핏의 패션을 추천받으세요. TrendScope AI 코디네이터.',
-  ogImage = '/logo1.png',
-  ogUrl = 'https://trend-scope.net', // 실제 배포 도메인에 맞춰 조정 필요
+  description = DEFAULT_DESCRIPTION,
+  ogImage = DEFAULT_OG_IMAGE,
+  ogUrl,
+  canonicalUrl,
+  structuredData,
   noindex = false,
 }: SEOProps) {
+  const siteUrl = resolveSiteUrl();
+  const pagePath = resolvePagePath();
+  const resolvedCanonicalUrl = toAbsoluteUrl(canonicalUrl ?? pagePath, siteUrl);
+  const resolvedOgUrl = toAbsoluteUrl(ogUrl ?? pagePath, siteUrl);
+  const resolvedOgImage = toAbsoluteUrl(ogImage, siteUrl);
+  const robots = noindex ? "noindex, nofollow" : "index, follow";
+  const ogLocale = resolveOgLocale();
+
+  const structuredDataScripts = structuredData
+    ? (Array.isArray(structuredData) ? structuredData : [structuredData])
+    : [];
+
   return (
     <Helmet>
       <title>{title}</title>
       <meta name="description" content={description} />
+      <link rel="canonical" href={resolvedCanonicalUrl} />
+      <meta name="robots" content={robots} />
+      <meta name="googlebot" content={robots} />
 
-      {/* Open Graph */}
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
-      <meta property="og:image" content={ogImage} />
-      <meta property="og:url" content={ogUrl} />
+      <meta property="og:image" content={resolvedOgImage} />
+      <meta property="og:url" content={resolvedOgUrl} />
       <meta property="og:type" content="website" />
+      <meta property="og:site_name" content="TrendScope" />
+      <meta property="og:locale" content={ogLocale} />
 
-      {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={ogImage} />
+      <meta name="twitter:image" content={resolvedOgImage} />
 
-      {/* noindex (비공개 페이지용) */}
-      {noindex && <meta name="robots" content="noindex, nofollow" />}
+      {structuredDataScripts.map((schema, index) => (
+        <script key={`seo-schema-${index}`} type="application/ld+json">
+          {JSON.stringify(schema)}
+        </script>
+      ))}
     </Helmet>
   );
 }

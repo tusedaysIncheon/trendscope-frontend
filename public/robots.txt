@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Non-public app flows
+Disallow: /cookie
+Disallow: /login
+Disallow: /profile
+Disallow: /payment
+Disallow: /measure
+Disallow: /share
+Disallow: /dev
+
+Sitemap: https://trend-scope.net/sitemap.xml
