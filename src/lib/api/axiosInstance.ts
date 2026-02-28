@@ -1,8 +1,9 @@
 import axios from "axios";
 import type { InternalAxiosRequestConfig } from "axios";
 import { useAuthStore } from "@/store/useAuthStore";
+import { getBackendApiBaseUrl } from "@/lib/config/runtime";
 
-const API = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const API = getBackendApiBaseUrl();
 
 export const axiosInstance = axios.create({
   baseURL: API,

@@ -1,7 +1,8 @@
 import { FcGoogle } from "react-icons/fc"
 // import { SiNaver } from "react-icons/si"
+import { getBackendApiBaseUrl } from "@/lib/config/runtime";
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const API_BASE_URL = getBackendApiBaseUrl();
 
 export function SocialLoginSection() {
 

@@ -5,8 +5,9 @@ import { Card } from "@/shared/ui/card";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { LandingHeader } from "@/shared/layouts/headers/LandingHeader";
 import { SEO } from "@/shared/components/SEO";
+import { getBackendApiBaseUrl } from "@/lib/config/runtime";
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const API_BASE_URL = getBackendApiBaseUrl();
 
 export default function LoginPage() {
   const navigate = useNavigate();

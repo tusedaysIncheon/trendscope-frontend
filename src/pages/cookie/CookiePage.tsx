@@ -7,8 +7,9 @@ import { getDeviceId } from "@/lib/utils";
 import { getUserLoadInfo } from "@/features/user/api/user.api";
 import { useQueryClient } from "@tanstack/react-query";
 import { SEO } from "@/shared/components/SEO";
+import { getBackendApiBaseUrl } from "@/lib/config/runtime";
 
-const BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const BACKEND_API_BASE_URL = getBackendApiBaseUrl();
 
 function CookiePage() {
   const navigate = useNavigate();

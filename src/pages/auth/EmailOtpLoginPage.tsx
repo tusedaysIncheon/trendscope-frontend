@@ -8,8 +8,9 @@ import { LandingHeader } from "@/shared/layouts/headers/LandingHeader";
 import { requestEmailOtp } from "@/features/auth/api/emailOtp.api";
 import { getApiErrorMessage } from "@/lib/api/error";
 import { SEO } from "@/shared/components/SEO";
+import { getBackendApiBaseUrl } from "@/lib/config/runtime";
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const API_BASE_URL = getBackendApiBaseUrl();
 const EMAIL_OTP_STORAGE_KEY = "emailOtpTargetEmail";
 
 function isValidEmail(email: string) {
