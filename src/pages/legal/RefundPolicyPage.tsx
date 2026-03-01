@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { LandingHeader } from "@/shared/layouts/headers/LandingHeader";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { LEGAL_CONTENT } from "@/lib/i18n/legalContent";
+import { withLanguagePrefix } from "@/lib/i18n/url";
 import { SEO } from "@/shared/components/SEO";
 
 export default function RefundPolicyPage() {
@@ -41,7 +42,7 @@ export default function RefundPolicyPage() {
             </section>
 
             <div className="pt-2">
-              <Link to="/" className="text-sm font-semibold text-primary hover:underline">
+              <Link to={withLanguagePrefix("/", language)} className="text-sm font-semibold text-primary hover:underline">
                 {t("common.back")}
               </Link>
             </div>

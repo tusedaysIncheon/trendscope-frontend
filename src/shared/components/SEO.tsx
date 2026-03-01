@@ -1,4 +1,6 @@
 import { Helmet } from "react-helmet-async";
+import { SUPPORTED_LANGUAGES } from "@/lib/i18n/translations";
+import { isLocalizedPublicPath, stripLanguagePrefix, withLanguagePrefix } from "@/lib/i18n/url";
 
 interface SEOProps {
   title: string;
@@ -19,6 +21,12 @@ const OG_LOCALE_MAP: Record<string, string> = {
   en: "en_US",
   ja: "ja_JP",
   zh: "zh_CN",
+};
+const HREFLANG_MAP: Record<string, string> = {
+  ko: "ko-KR",
+  en: "en-US",
+  ja: "ja-JP",
+  zh: "zh-CN",
 };
 
 function trimTrailingSlash(value: string) {
@@ -69,11 +77,13 @@ export function SEO({
 }: SEOProps) {
   const siteUrl = resolveSiteUrl();
   const pagePath = resolvePagePath();
+  const normalizedPublicPath = stripLanguagePrefix(pagePath);
   const resolvedCanonicalUrl = toAbsoluteUrl(canonicalUrl ?? pagePath, siteUrl);
   const resolvedOgUrl = toAbsoluteUrl(ogUrl ?? pagePath, siteUrl);
   const resolvedOgImage = toAbsoluteUrl(ogImage, siteUrl);
   const robots = noindex ? "noindex, nofollow" : "index, follow";
   const ogLocale = resolveOgLocale();
+  const shouldRenderHreflang = !noindex && isLocalizedPublicPath(pagePath);
 
   const structuredDataScripts = structuredData
     ? (Array.isArray(structuredData) ? structuredData : [structuredData])
@@ -99,6 +109,23 @@ export function SEO({
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={resolvedOgImage} />
+
+      {shouldRenderHreflang &&
+        SUPPORTED_LANGUAGES.map((lang) => (
+          <link
+            key={`alt-${lang}`}
+            rel="alternate"
+            hrefLang={HREFLANG_MAP[lang]}
+            href={toAbsoluteUrl(withLanguagePrefix(normalizedPublicPath, lang), siteUrl)}
+          />
+        ))}
+      {shouldRenderHreflang && (
+        <link
+          rel="alternate"
+          hrefLang="x-default"
+          href={toAbsoluteUrl(withLanguagePrefix(normalizedPublicPath, "ko"), siteUrl)}
+        />
+      )}
 
       {structuredDataScripts.map((schema, index) => (
         <script key={`seo-schema-${index}`} type="application/ld+json">

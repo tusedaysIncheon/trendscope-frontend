@@ -7,12 +7,13 @@ import { LandingHeader } from "@/shared/layouts/headers/LandingHeader";
 import { SEO } from "@/shared/components/SEO";
 import { getBackendApiBaseUrl } from "@/lib/config/runtime";
 import { openCookieSettings } from "@/lib/cookiebot";
+import { withLanguagePrefix } from "@/lib/i18n/url";
 
 const API_BASE_URL = getBackendApiBaseUrl();
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { t, language } = useI18n();
 
   const handleSocialLogin = (provider: "naver" | "google") => {
     window.location.href = `${API_BASE_URL}/oauth2/authorization/${provider}`;
@@ -100,11 +101,17 @@ export default function LoginPage() {
             <div className="mt-6 text-center">
               <p className="mx-auto max-w-sm text-xs leading-relaxed text-slate-500">
                 {t("loginPage.termsPrefix")}{" "}
-                <Link to="/terms" className="text-primary transition-colors hover:text-blue-600 hover:underline">
+                <Link
+                  to={withLanguagePrefix("/terms", language)}
+                  className="text-primary transition-colors hover:text-blue-600 hover:underline"
+                >
                   {t("common.terms")}
                 </Link>{" "}
                 {t("loginPage.and")}{" "}
-                <Link to="/privacy" className="text-primary transition-colors hover:text-blue-600 hover:underline">
+                <Link
+                  to={withLanguagePrefix("/privacy", language)}
+                  className="text-primary transition-colors hover:text-blue-600 hover:underline"
+                >
                   {t("common.privacy")}
                 </Link>
                 {t("loginPage.termsSuffix")}

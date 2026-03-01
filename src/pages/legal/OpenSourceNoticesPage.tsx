@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { LandingHeader } from "@/shared/layouts/headers/LandingHeader";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { LEGAL_CONTENT } from "@/lib/i18n/legalContent";
+import { withLanguagePrefix } from "@/lib/i18n/url";
 import { SEO } from "@/shared/components/SEO";
 
 type NoticeItem = {
@@ -90,13 +91,13 @@ export default function OpenSourceNoticesPage() {
             </section>
 
             <div className="flex items-center gap-4 border-t border-slate-100 pt-3">
-              <Link to="/privacy" className="text-sm font-semibold text-primary hover:underline">
+              <Link to={withLanguagePrefix("/privacy", language)} className="text-sm font-semibold text-primary hover:underline">
                 {t("common.privacy")}
               </Link>
-              <Link to="/terms" className="text-sm font-semibold text-primary hover:underline">
+              <Link to={withLanguagePrefix("/terms", language)} className="text-sm font-semibold text-primary hover:underline">
                 {t("common.terms")}
               </Link>
-              <Link to="/" className="text-sm font-semibold text-primary hover:underline">
+              <Link to={withLanguagePrefix("/", language)} className="text-sm font-semibold text-primary hover:underline">
                 {t("common.back")}
               </Link>
             </div>

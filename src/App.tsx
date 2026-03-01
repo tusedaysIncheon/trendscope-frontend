@@ -1,8 +1,12 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
+import { useEffect } from "react";
+import { BrowserRouter, Navigate, Outlet, Route, Routes, useParams } from "react-router-dom"
 import { ThemeProvider } from "@/shared/theme/theme-provider"
 import AppLayout from "@/shared/layouts/AppLayout"
 import AuthInitializer from "@/features/auth/components/AuthInitializer"
 import { AppErrorBoundary } from "@/shared/components/AppErrorBoundary";
+import { useI18n } from "@/lib/i18n/I18nProvider";
+import { DEFAULT_LANGUAGE } from "@/lib/i18n/translations";
+import { isSupportedLanguage, withLanguagePrefix } from "@/lib/i18n/url";
 
 import IndexPage from "./pages/index/IndexPage";
 import LoginPage from "./pages/auth/LoginPage";
@@ -29,13 +33,48 @@ import HelpPage from "./pages/help/HelpPage";
 import LayoutGuidePage from "./pages/examples/LayoutGuidePage";
 
 
+function LocalizedPublicLayout() {
+  const { lang } = useParams();
+  const { language, setLanguage } = useI18n();
+
+  useEffect(() => {
+    if (isSupportedLanguage(lang) && language !== lang) {
+      setLanguage(lang);
+    }
+  }, [lang, language, setLanguage]);
+
+  if (!isSupportedLanguage(lang)) {
+    return <Navigate to={withLanguagePrefix("/", DEFAULT_LANGUAGE)} replace />;
+  }
+
+  return <Outlet />;
+}
+
 function AppRoutes() {
-
-
+  const defaultLocalizedRoot = withLanguagePrefix("/", DEFAULT_LANGUAGE);
+  const defaultLocalizedHelp = withLanguagePrefix("/help", DEFAULT_LANGUAGE);
+  const defaultLocalizedPrivacy = withLanguagePrefix("/privacy", DEFAULT_LANGUAGE);
+  const defaultLocalizedTerms = withLanguagePrefix("/terms", DEFAULT_LANGUAGE);
+  const defaultLocalizedRefundPolicy = withLanguagePrefix("/refund-policy", DEFAULT_LANGUAGE);
+  const defaultLocalizedOpenSourceNotices = withLanguagePrefix("/open-source-notices", DEFAULT_LANGUAGE);
 
   return (
     <Routes>
-      <Route path="/" element={<IndexPage />} />
+      <Route path="/" element={<Navigate to={defaultLocalizedRoot} replace />} />
+      <Route path="/help" element={<Navigate to={defaultLocalizedHelp} replace />} />
+      <Route path="/privacy" element={<Navigate to={defaultLocalizedPrivacy} replace />} />
+      <Route path="/terms" element={<Navigate to={defaultLocalizedTerms} replace />} />
+      <Route path="/refund-policy" element={<Navigate to={defaultLocalizedRefundPolicy} replace />} />
+      <Route path="/open-source-notices" element={<Navigate to={defaultLocalizedOpenSourceNotices} replace />} />
+
+      <Route path="/:lang" element={<LocalizedPublicLayout />}>
+        <Route index element={<IndexPage />} />
+        <Route path="help" element={<HelpPage />} />
+        <Route path="privacy" element={<PrivacyPolicyPage />} />
+        <Route path="terms" element={<TermsPage />} />
+        <Route path="refund-policy" element={<RefundPolicyPage />} />
+        <Route path="open-source-notices" element={<OpenSourceNoticesPage />} />
+      </Route>
 
       {/* [그룹 1] 로그인 후 보여질 메인 화면들 
         AppLayout(헤더+사이드바)이 적용됨 
@@ -65,11 +104,6 @@ function AppRoutes() {
       <Route path="/measure/analyzing/:jobId" element={<MeasurementAnalyzingPage />} />
       <Route path="/measure/result/:jobId" element={<MeasurementResultPage />} />
       <Route path="/share/result/:shareToken" element={<MeasurementSharedResultPage />} />
-      <Route path="/privacy" element={<PrivacyPolicyPage />} />
-      <Route path="/terms" element={<TermsPage />} />
-      <Route path="/refund-policy" element={<RefundPolicyPage />} />
-      <Route path="/open-source-notices" element={<OpenSourceNoticesPage />} />
-      <Route path="/help" element={<HelpPage />} />
       <Route path="/dev/layout-guide" element={<LayoutGuidePage />} />
 
     </Routes>

@@ -3,6 +3,7 @@ import { Crown, Zap } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { LanguageSwitcher } from "@/shared/components/LanguageSwitcher";
 import { useI18n } from "@/lib/i18n/I18nProvider";
+import { withLanguagePrefix } from "@/lib/i18n/url";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useTicketSummary } from "@/features/tickets/hooks/useTicket";
 
@@ -20,7 +21,7 @@ export function LandingHeader({
   enableTicketRouting = false,
 }: LandingHeaderProps) {
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const { data: ticketSummary, isLoading } = useTicketSummary();
   const showTicketBadges = showCta && isAuthenticated && ctaLabelKey === "common.myPage";
@@ -47,7 +48,7 @@ export function LandingHeader({
 
   return (
     <header className="sticky top-0 z-50 flex items-center justify-between border-b border-border bg-background px-3 py-3 sm:px-5 sm:py-4">
-      <Link to="/" className="flex min-w-0 items-center gap-2 transition-opacity hover:opacity-80">
+      <Link to={withLanguagePrefix("/", language)} className="flex min-w-0 items-center gap-2 transition-opacity hover:opacity-80">
         <img src="/logo1.png" alt={t("common.appName")} className="h-8 w-8 rounded-sm object-contain sm:h-9 sm:w-9" />
         <span className="truncate text-base font-black tracking-tight sm:text-lg">{t("common.appName")}</span>
       </Link>

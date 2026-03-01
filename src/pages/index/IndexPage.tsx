@@ -19,6 +19,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useTicketSummary } from "@/features/tickets/hooks/useTicket";
 import { useUser } from "@/features/user/hooks/useUser";
 import { openCookieSettings } from "@/lib/cookiebot";
+import { withLanguagePrefix } from "@/lib/i18n/url";
 
 const FIRST_VISIT_PROMO_KEY = "trendscope:first-visit-promo:v1";
 const WELCOME_QUICK_TICKET_KEY_PREFIX = "trendscope:welcome-quick-ticket:v1:";
@@ -373,20 +374,32 @@ export default function IndexPage() {
           <div className="mx-auto max-w-[1200px] px-4 text-center sm:px-5">
             <p className="text-xs text-slate-400">{t("common.footerCopyright")}</p>
             <nav className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-slate-500 sm:gap-x-5">
-              <Link to="/privacy" className="whitespace-nowrap break-keep transition-colors hover:text-primary">
+              <Link
+                to={withLanguagePrefix("/privacy", language)}
+                className="whitespace-nowrap break-keep transition-colors hover:text-primary"
+              >
                 {t("common.privacy")}
               </Link>
-              <Link to="/terms" className="whitespace-nowrap break-keep transition-colors hover:text-primary">
+              <Link
+                to={withLanguagePrefix("/terms", language)}
+                className="whitespace-nowrap break-keep transition-colors hover:text-primary"
+              >
                 {t("common.terms")}
               </Link>
-              <Link to="/help" className="whitespace-nowrap break-keep transition-colors hover:text-primary">
+              <Link
+                to={withLanguagePrefix("/help", language)}
+                className="whitespace-nowrap break-keep transition-colors hover:text-primary"
+              >
                 {t("common.help")}
               </Link>
-              <Link to="/refund-policy" className="whitespace-nowrap break-keep transition-colors hover:text-primary">
+              <Link
+                to={withLanguagePrefix("/refund-policy", language)}
+                className="whitespace-nowrap break-keep transition-colors hover:text-primary"
+              >
                 {t("common.refundPolicy")}
               </Link>
               <Link
-                to="/open-source-notices"
+                to={withLanguagePrefix("/open-source-notices", language)}
                 className="whitespace-nowrap break-keep transition-colors hover:text-primary"
               >
                 {t("common.openSourceNotices")}

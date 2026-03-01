@@ -3,6 +3,7 @@ import { LandingHeader } from "@/shared/layouts/headers/LandingHeader";
 import { SEO } from "@/shared/components/SEO";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { LEGAL_CONTENT } from "@/lib/i18n/legalContent";
+import { withLanguagePrefix } from "@/lib/i18n/url";
 
 export default function HelpPage() {
   const { t, language } = useI18n();
@@ -45,16 +46,16 @@ export default function HelpPage() {
             <section className="space-y-3 text-sm leading-7 text-slate-700">
               <h2 className="text-base font-bold text-slate-900">{content.section3Title}</h2>
               <div className="flex flex-wrap gap-3">
-                <Link to="/privacy" className="text-sm font-semibold text-primary hover:underline">
+                <Link to={withLanguagePrefix("/privacy", language)} className="text-sm font-semibold text-primary hover:underline">
                   {t("common.privacy")}
                 </Link>
-                <Link to="/terms" className="text-sm font-semibold text-primary hover:underline">
+                <Link to={withLanguagePrefix("/terms", language)} className="text-sm font-semibold text-primary hover:underline">
                   {t("common.terms")}
                 </Link>
-                <Link to="/refund-policy" className="text-sm font-semibold text-primary hover:underline">
+                <Link to={withLanguagePrefix("/refund-policy", language)} className="text-sm font-semibold text-primary hover:underline">
                   {t("common.refundPolicy")}
                 </Link>
-                <Link to="/open-source-notices" className="text-sm font-semibold text-primary hover:underline">
+                <Link to={withLanguagePrefix("/open-source-notices", language)} className="text-sm font-semibold text-primary hover:underline">
                   {t("common.openSourceNotices")}
                 </Link>
               </div>
@@ -66,7 +67,7 @@ export default function HelpPage() {
             </section>
 
             <div className="border-t border-slate-100 pt-3">
-              <Link to="/" className="text-sm font-semibold text-primary hover:underline">
+              <Link to={withLanguagePrefix("/", language)} className="text-sm font-semibold text-primary hover:underline">
                 {t("common.back")}
               </Link>
             </div>

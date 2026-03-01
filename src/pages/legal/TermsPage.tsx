@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { LandingHeader } from "@/shared/layouts/headers/LandingHeader";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { LEGAL_CONTENT } from "@/lib/i18n/legalContent";
+import { withLanguagePrefix } from "@/lib/i18n/url";
 import { SEO } from "@/shared/components/SEO";
 
 export default function TermsPage() {
@@ -82,10 +83,13 @@ export default function TermsPage() {
             </section>
 
             <div className="flex items-center gap-4 border-t border-slate-100 pt-3">
-              <Link to="/open-source-notices" className="text-sm font-semibold text-primary hover:underline">
+              <Link
+                to={withLanguagePrefix("/open-source-notices", language)}
+                className="text-sm font-semibold text-primary hover:underline"
+              >
                 {t("common.openSourceNotices")}
               </Link>
-              <Link to="/" className="text-sm font-semibold text-primary hover:underline">
+              <Link to={withLanguagePrefix("/", language)} className="text-sm font-semibold text-primary hover:underline">
                 {t("common.back")}
               </Link>
             </div>

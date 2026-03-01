@@ -13,6 +13,7 @@ import {
   TRANSLATIONS,
   type Language,
 } from "./translations";
+import { getPathLanguage } from "./url";
 
 type InterpolationValues = Record<string, string | number>;
 
@@ -59,6 +60,10 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => {
     if (typeof window === "undefined") {
       return DEFAULT_LANGUAGE;
+    }
+    const pathLanguage = getPathLanguage(window.location.pathname);
+    if (pathLanguage) {
+      return pathLanguage;
     }
     const saved = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
     return resolveLanguage(saved);
