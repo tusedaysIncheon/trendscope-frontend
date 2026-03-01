@@ -2,7 +2,7 @@ import { ArrowRight, Edit3, LockKeyhole, Mail } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { queryClient } from "@/main";
+import { queryClient } from "@/lib/queryClient";
 import { requestEmailOtp, verifyEmailOtp } from "@/features/auth/api/emailOtp.api";
 import { getUserLoadInfo } from "@/features/user/api/user.api";
 import { getApiErrorMessage } from "@/lib/api/error";

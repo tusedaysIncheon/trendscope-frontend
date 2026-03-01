@@ -46,7 +46,7 @@ import {
 
 import { saveUserDetails } from "@/features/user/api/user.api";
 import { getPresignedUrlAPI, uploadToS3 } from "@/shared/api/file.api";
-import { queryClient } from "@/main";
+import { queryClient } from "@/lib/queryClient";
 import { getApiErrorMessage } from "@/lib/api/error";
 import { SEO } from "@/shared/components/SEO";
 

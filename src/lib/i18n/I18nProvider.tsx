@@ -56,10 +56,16 @@ function interpolate(template: string, values?: InterpolationValues): string {
   }, template);
 }
 
-export function I18nProvider({ children }: { children: React.ReactNode }) {
+export function I18nProvider({
+  children,
+  initialLanguage,
+}: {
+  children: React.ReactNode;
+  initialLanguage?: Language;
+}) {
   const [language, setLanguageState] = useState<Language>(() => {
     if (typeof window === "undefined") {
-      return DEFAULT_LANGUAGE;
+      return resolveLanguage(initialLanguage ?? DEFAULT_LANGUAGE);
     }
     const pathLanguage = getPathLanguage(window.location.pathname);
     if (pathLanguage) {
@@ -70,6 +76,9 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
     window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
     document.documentElement.lang = language;
   }, [language]);

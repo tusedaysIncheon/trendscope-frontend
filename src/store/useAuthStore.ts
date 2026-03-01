@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { queryClient } from "@/main";
+import { queryClient } from "@/lib/queryClient";
 import { logoutAPI } from "@/features/auth/api/auth.api";
 
 interface AuthState {

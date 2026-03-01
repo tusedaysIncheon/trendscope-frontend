@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
 import { SUPPORTED_LANGUAGES } from "@/lib/i18n/translations";
-import { isLocalizedPublicPath, stripLanguagePrefix, withLanguagePrefix } from "@/lib/i18n/url";
+import { getPathLanguage, isLocalizedPublicPath, stripLanguagePrefix, withLanguagePrefix } from "@/lib/i18n/url";
 
 interface SEOProps {
   title: string;
@@ -34,7 +35,7 @@ function trimTrailingSlash(value: string) {
 }
 
 function resolveSiteUrl() {
-  const envValue = (import.meta.env.VITE_SITE_URL as string | undefined)?.trim();
+  const envValue = (import.meta as { env?: { VITE_SITE_URL?: string } }).env?.VITE_SITE_URL?.trim();
   if (envValue) {
     return trimTrailingSlash(envValue);
   }
@@ -50,14 +51,12 @@ function toAbsoluteUrl(url: string, siteUrl: string) {
   return `${siteUrl}${path}`;
 }
 
-function resolvePagePath() {
-  if (typeof window === "undefined") {
-    return "/";
+function resolveOgLocale(pathname: string) {
+  const pathLanguage = getPathLanguage(pathname);
+  if (pathLanguage) {
+    return OG_LOCALE_MAP[pathLanguage] ?? OG_LOCALE_MAP.ko;
   }
-  return window.location.pathname || "/";
-}
 
-function resolveOgLocale() {
   if (typeof document === "undefined") {
     return OG_LOCALE_MAP.ko;
   }
@@ -75,14 +74,15 @@ export function SEO({
   structuredData,
   noindex = false,
 }: SEOProps) {
+  const location = useLocation();
   const siteUrl = resolveSiteUrl();
-  const pagePath = resolvePagePath();
+  const pagePath = location.pathname || "/";
   const normalizedPublicPath = stripLanguagePrefix(pagePath);
   const resolvedCanonicalUrl = toAbsoluteUrl(canonicalUrl ?? pagePath, siteUrl);
   const resolvedOgUrl = toAbsoluteUrl(ogUrl ?? pagePath, siteUrl);
   const resolvedOgImage = toAbsoluteUrl(ogImage, siteUrl);
   const robots = noindex ? "noindex, nofollow" : "index, follow";
-  const ogLocale = resolveOgLocale();
+  const ogLocale = resolveOgLocale(pagePath);
   const shouldRenderHreflang = !noindex && isLocalizedPublicPath(pagePath);
 
   const structuredDataScripts = structuredData

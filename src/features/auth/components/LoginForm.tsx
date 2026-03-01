@@ -16,7 +16,7 @@ import { getUserLoadInfo } from "@/features/user/api/user.api";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
-import { queryClient } from "@/main";
+import { queryClient } from "@/lib/queryClient";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { LanguageSwitcher } from "@/shared/components/LanguageSwitcher";
 

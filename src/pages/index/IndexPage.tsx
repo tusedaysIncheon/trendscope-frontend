@@ -115,7 +115,6 @@ export default function IndexPage() {
       <SEO
         title={t("landing.titleLine1Before3d") ? `TrendScope - ${t("landing.titleLine2")}` : "TrendScope - 3D 체형 분석 및 AI 패션 스타일링"}
         description="스마트폰 사진 2장으로 내 몸을 3D로 측정하고 완벽한 핏의 패션을 추천받으세요. TrendScope AI 코디네이터."
-        canonicalUrl="/"
         structuredData={[
           {
             "@context": "https://schema.org",
