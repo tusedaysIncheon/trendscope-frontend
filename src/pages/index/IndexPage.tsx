@@ -220,26 +220,26 @@ export default function IndexPage() {
 
         <main className="flex flex-1 px-5 py-6 lg:px-10 lg:py-10">
           <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-7 lg:grid lg:grid-cols-12 lg:gap-8">
-            <section className="flex flex-col gap-5 lg:col-span-5 lg:pt-3">
+            <section className="flex flex-col gap-5 lg:col-span-5 lg:pt-3 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out fill-mode-both">
               <div className="inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-primary ring-1 ring-primary/20">
                 <Sparkles className="h-4 w-4" />
                 <p className="text-xs font-bold tracking-wide">{t("landing.badge")}</p>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <h1 className="text-[2.25rem] font-black leading-[1.08] tracking-tight sm:text-[2.7rem]">
                   <span className="inline-flex flex-wrap items-center gap-x-2 text-slate-900">
                     <span>{t("landing.titleLine1Before3d")}</span>
-                    <span className="inline-flex h-[1.06em] items-center rounded-lg bg-primary px-2 text-white shadow-sm">
-                      <span className="relative top-[2px] text-[0.9em] leading-none">3D</span>
+                    <span className="relative inline-flex h-[1.1em] items-center rounded-xl bg-gradient-to-br from-primary to-blue-600 px-3 text-white shadow-lg shadow-primary/30">
+                      <span className="relative text-[0.9em] leading-none mb-[2px]">3D</span>
                     </span>
                     <span>{t("landing.titleLine1After3d")}</span>
                   </span>
-                  <span className="block text-slate-900">{t("landing.titleLine2")}</span>
+                  <span className="block text-slate-900 mt-1">{t("landing.titleLine2")}</span>
                 </h1>
                 <p
-                  className={`font-medium text-slate-600 ${isKorean
-                    ? "text-[13px] leading-[1.5] tracking-[-0.01em] sm:text-base sm:tracking-normal"
+                  className={`font-medium text-slate-500 ${isKorean
+                    ? "text-[14px] leading-[1.6] tracking-[-0.01em] sm:text-lg sm:tracking-[-0.015em]"
                     : "text-base leading-relaxed"
                     }`}
                 >
@@ -248,51 +248,62 @@ export default function IndexPage() {
                 </p>
               </div>
 
-              <div className="flex items-center gap-4 text-xs font-semibold text-slate-500">
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="h-[18px] w-[18px] text-green-500" />
+              <div className="mt-2 flex items-center gap-5 text-sm font-semibold text-slate-500">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-5 w-5 text-emerald-500" />
                   <span>{t("landing.encrypted")}</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <EyeOff className="h-[18px] w-[18px] text-primary" />
+                <div className="flex items-center gap-2">
+                  <EyeOff className="h-5 w-5 text-slate-400" />
                   <span>{t("landing.privateByDefault")}</span>
                 </div>
               </div>
             </section>
 
-            <section className="flex flex-col gap-4 lg:col-span-7">
-              <Card className="gap-4 rounded-2xl border border-border p-4 shadow-xl shadow-slate-200/60">
-                <LandingModelViewer />
+            <section className="flex flex-col gap-4 lg:col-span-7 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150 ease-out fill-mode-both">
+              <Card className="gap-5 rounded-[1.5rem] border-0 bg-white p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-slate-900/5 sm:p-6 lg:p-7">
+                <div className="overflow-hidden rounded-2xl ring-1 ring-slate-900/5 shadow-inner">
+                  <LandingModelViewer />
+                </div>
 
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                  <article className="rounded-xl border border-border bg-slate-50 p-3">
-                    <div className="mb-2 inline-flex rounded-full bg-primary/10 p-1.5 text-primary">
-                      <Ruler className="h-4 w-4" />
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                  <article className="group relative overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/50 hover:bg-white">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                    <div className="relative z-10">
+                      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-white">
+                        <Ruler className="h-4 w-4" />
+                      </div>
+                      <h3 className="text-[15px] font-bold text-slate-900">{t("landing.feature1Title")}</h3>
+                      <p className="mt-1.5 text-[13px] leading-relaxed text-slate-500">
+                        {t("landing.feature1Description")}
+                      </p>
                     </div>
-                    <h3 className="text-sm font-bold text-slate-900">{t("landing.feature1Title")}</h3>
-                    <p className="mt-1 text-xs leading-relaxed text-slate-600">
-                      {t("landing.feature1Description")}
-                    </p>
                   </article>
 
-                  <article className="rounded-xl border border-border bg-slate-50 p-3">
-                    <div className="mb-2 inline-flex rounded-full bg-primary/10 p-1.5 text-primary">
-                      <Sparkles className="h-4 w-4" />
+                  <article className="group relative overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/50 hover:bg-white">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                    <div className="relative z-10">
+                      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-white">
+                        <Sparkles className="h-4 w-4" />
+                      </div>
+                      <h3 className="text-[15px] font-bold text-slate-900">{t("landing.feature2Title")}</h3>
+                      <p className="mt-1.5 text-[13px] leading-relaxed text-slate-500">
+                        {t("landing.feature2Description")}
+                      </p>
                     </div>
-                    <h3 className="text-sm font-bold text-slate-900">{t("landing.feature2Title")}</h3>
-                    <p className="mt-1 text-xs leading-relaxed text-slate-600">
-                      {t("landing.feature2Description")}
-                    </p>
                   </article>
 
-                  <article className="rounded-xl border border-border bg-slate-50 p-3">
-                    <div className="mb-2 inline-flex rounded-full bg-primary/10 p-1.5 text-primary">
-                      <Shirt className="h-4 w-4" />
+                  <article className="group relative overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/50 hover:bg-white">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                    <div className="relative z-10">
+                      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-white">
+                        <Shirt className="h-4 w-4" />
+                      </div>
+                      <h3 className="text-[15px] font-bold text-slate-900">{t("landing.feature3Title")}</h3>
+                      <p className="mt-1.5 text-[13px] leading-relaxed text-slate-500">
+                        {t("landing.feature3Description")}
+                      </p>
                     </div>
-                    <h3 className="text-sm font-bold text-slate-900">{t("landing.feature3Title")}</h3>
-                    <p className="mt-1 text-xs leading-relaxed text-slate-600">
-                      {t("landing.feature3Description")}
-                    </p>
                   </article>
                 </div>
 
@@ -302,42 +313,36 @@ export default function IndexPage() {
                     <p className="mt-1 text-xs leading-relaxed text-slate-600">{t("landing.modeSubtitle")}</p>
 
                     <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      <article className="relative rounded-xl border border-slate-200 bg-white p-3">
-                        <p className="absolute right-3 top-3 rounded-full bg-primary/10 px-2 py-1 text-[10px] font-semibold leading-none text-primary">
-                          {t("landing.quickTicketUseNotice")}
-                        </p>
-                        <div className="mb-2 inline-flex rounded-full bg-primary/10 p-1.5 text-primary">
+                      <article className="group relative rounded-2xl border border-slate-200 bg-white p-4 transition-all hover:border-primary/30 hover:shadow-md hover:shadow-primary/5">
+                        <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
                           <Zap className="h-4 w-4" />
                         </div>
-                        <h4 className="text-sm font-bold text-slate-900">{t("landing.quickTitle")}</h4>
-                        <p className="mt-1 text-xs leading-relaxed text-slate-600">{t("landing.quickDescription")}</p>
-                        <ul className="mt-2 list-disc space-y-1 pl-4 text-xs leading-relaxed text-slate-600">
+                        <h4 className="text-base font-bold text-slate-900">{t("landing.quickTitle")}</h4>
+                        <p className="mt-1.5 text-xs leading-relaxed text-slate-500">{t("landing.quickDescription")}</p>
+                        <ul className="mt-3 list-disc space-y-1.5 pl-4 text-[13px] leading-relaxed text-slate-600">
                           <li>{t("landing.quickScriptLine1")}</li>
                           <li>{t("landing.quickScriptLine2")}</li>
                         </ul>
                         <Button
-                          className="mt-3 h-10 w-full rounded-lg text-xs font-bold"
+                          className="mt-4 h-11 w-full rounded-xl text-[13px] font-bold"
                           onClick={() => navigate("/measure/info", { state: { measurementModel: "quick" } })}
                         >
                           {t("landing.quickCta")}
                         </Button>
                       </article>
 
-                      <article className="relative rounded-xl border border-primary/25 bg-primary/[0.07] p-3">
-                        <p className="absolute right-3 top-3 rounded-full bg-[#FA824C]/15 px-2 py-1 text-[10px] font-semibold leading-none text-[#C85E2D]">
-                          {t("landing.premiumTicketUseNotice")}
-                        </p>
-                        <div className="mb-2 inline-flex rounded-full bg-white p-1.5 text-primary ring-1 ring-primary/20">
-                          <Crown className="h-4 w-4" />
+                      <article className="group relative rounded-2xl border border-primary/20 bg-primary/[0.04] p-4 transition-all hover:bg-primary/[0.08] hover:border-primary/30">
+                        <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-primary shadow-sm ring-1 ring-primary/20">
+                          <Crown className="h-4 w-4 text-emerald-500" />
                         </div>
-                        <h4 className="text-sm font-bold text-slate-900">{t("landing.premiumTitle")}</h4>
-                        <p className="mt-1 text-xs leading-relaxed text-slate-700">{t("landing.premiumDescription")}</p>
-                        <ul className="mt-2 list-disc space-y-1 pl-4 text-xs leading-relaxed text-slate-700">
+                        <h4 className="text-base font-bold text-slate-900">{t("landing.premiumTitle")}</h4>
+                        <p className="mt-1.5 text-xs leading-relaxed text-slate-600">{t("landing.premiumDescription")}</p>
+                        <ul className="mt-3 list-disc space-y-1.5 pl-4 text-[13px] leading-relaxed text-slate-600">
                           <li>{t("landing.premiumScriptLine1")}</li>
                           <li>{t("landing.premiumScriptLine2")}</li>
                         </ul>
                         <Button
-                          className="mt-3 h-10 w-full rounded-lg bg-[#342E37] text-xs font-bold text-white shadow-md hover:bg-[#27222a]"
+                          className="mt-4 h-11 w-full rounded-xl bg-slate-900 text-[13px] font-bold text-white shadow hover:-translate-y-1 hover:bg-slate-800"
                           onClick={() => navigate("/measure/info", { state: { measurementModel: "premium" } })}
                         >
                           {t("landing.premiumCta")}
@@ -347,9 +352,9 @@ export default function IndexPage() {
                   </div>
                 ) : (
                   <>
-                    <div className="rounded-xl bg-[#342E37] p-4 text-white">
-                      <h3 className="mb-2 text-sm font-bold">{t("landing.scriptTitle")}</h3>
-                      <ul className="list-disc space-y-1.5 pl-5 text-xs leading-relaxed text-slate-100">
+                    <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 p-6 text-white shadow-xl">
+                      <h3 className="mb-3 text-[15px] font-bold text-white">{t("landing.scriptTitle")}</h3>
+                      <ul className="list-disc space-y-2 pl-5 text-[13px] leading-relaxed text-slate-300">
                         <li>{t("landing.scriptLine1")}</li>
                         <li>{t("landing.scriptLine2")}</li>
                         <li>{t("landing.scriptLine3")}</li>
@@ -357,7 +362,7 @@ export default function IndexPage() {
                     </div>
 
                     <Button
-                      className="h-12 w-full items-center justify-center rounded-xl py-0 text-sm font-bold leading-none text-white shadow-lg shadow-primary/25"
+                      className="h-14 w-full items-center justify-center rounded-2xl py-0 text-base font-bold leading-none text-white shadow-[0_8px_30px_rgb(60,145,230,0.3)] transition-transform hover:-translate-y-1"
                       onClick={() => navigate("/login")}
                     >
                       <span className="inline-block translate-y-[0.5px]">{t("common.start")}</span>

@@ -77,7 +77,7 @@ export function LandingHeader({
               className="inline-flex items-center gap-1 rounded-full bg-transparent px-1.5 py-0.5 text-[10px] font-semibold text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70 sm:px-2 sm:py-0.5 sm:text-[11px]"
               aria-label={`${t("common.premiumTicket")} ${premiumBalance}`}
             >
-              <Crown className="h-3.5 w-3.5 text-[#FA824C]" />
+              <Crown className="h-3.5 w-3.5 text-amber-500" />
               <span className="hidden sm:inline">{t("common.premiumTicket")}</span>
               <span className="font-bold text-slate-900">{premiumBalance}</span>
             </button>
@@ -86,9 +86,9 @@ export function LandingHeader({
         <LanguageSwitcher />
         {showCta && (
           <Button
-            variant="secondary"
+            variant="default"
             size="sm"
-            className="h-8 whitespace-nowrap rounded-full px-3 text-[11px] font-bold sm:h-9 sm:px-4 sm:text-xs"
+            className="h-8 whitespace-nowrap rounded-full px-3 text-[11px] font-bold shadow-md shadow-primary/20 sm:h-9 sm:px-4 sm:text-xs"
             asChild
           >
             <Link to={ctaPath}>

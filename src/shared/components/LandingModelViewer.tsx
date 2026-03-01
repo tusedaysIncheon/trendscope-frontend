@@ -11,7 +11,7 @@ export function LandingModelViewer({
   const { t } = useI18n();
 
   return (
-    <div className="relative h-[340px] overflow-hidden rounded-2xl border border-slate-700 bg-gradient-to-br from-[#1B1F2A] via-[#161A24] to-[#11141D]">
+    <div className="relative h-[340px] overflow-hidden rounded-2xl border-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 shadow-inner">
       <ModelGlbViewer
         src={modelSrc}
         autoRotate
