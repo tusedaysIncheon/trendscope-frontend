@@ -19,8 +19,30 @@ type LocationState = {
   email?: string;
 };
 
+type TranslateFn = (key: string) => string;
+
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function resolveOtpInlineError(message: string, t: TranslateFn): string | null {
+  if (!message) {
+    return null;
+  }
+
+  if (message.includes("시도 횟수를 초과")) {
+    return t("emailOtp.attemptsExceeded");
+  }
+
+  if (message.includes("만료되었") || message.includes("존재하지 않습니다")) {
+    return t("emailOtp.expiredCode");
+  }
+
+  if (message.includes("올바르지 않습니다") || message.includes("6자리 숫자")) {
+    return t("emailOtp.invalidCode");
+  }
+
+  return null;
 }
 
 function formatCountdown(totalSeconds: number) {
@@ -49,6 +71,7 @@ export default function EmailOtpVerifyPage() {
   const [secondsLeft, setSecondsLeft] = useState(OTP_EXPIRE_SECONDS);
   const [isResending, setIsResending] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [verifyInlineError, setVerifyInlineError] = useState<string | null>(null);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   const code = codeDigits.join("");
@@ -75,6 +98,7 @@ export default function EmailOtpVerifyPage() {
       return;
     }
 
+    setVerifyInlineError(null);
     setCodeDigits((prev) => {
       const next = [...prev];
       parsed.forEach((digit, idx) => {
@@ -89,6 +113,7 @@ export default function EmailOtpVerifyPage() {
 
   const handleDigitChange = (index: number, value: string) => {
     const cleaned = value.replace(/\D/g, "");
+    setVerifyInlineError(null);
     if (!cleaned) {
       setCodeDigits((prev) => {
         const next = [...prev];
@@ -136,6 +161,7 @@ export default function EmailOtpVerifyPage() {
     }
     try {
       setIsResending(true);
+      setVerifyInlineError(null);
       await requestEmailOtp({ email });
       setCodeDigits(Array.from({ length: OTP_LENGTH }, () => ""));
       setSecondsLeft(OTP_EXPIRE_SECONDS);
@@ -151,11 +177,12 @@ export default function EmailOtpVerifyPage() {
   const handleVerify = async (event: React.FormEvent) => {
     event.preventDefault();
     if (code.length !== OTP_LENGTH) {
-      toast.error(t("emailOtp.emptyCode"));
+      setVerifyInlineError(t("emailOtp.emptyCode"));
       return;
     }
 
     try {
+      setVerifyInlineError(null);
       setIsVerifying(true);
       const response = await verifyEmailOtp({ email, code });
       if (!response.accessToken) {
@@ -170,7 +197,13 @@ export default function EmailOtpVerifyPage() {
       toast.success(t("emailOtp.verifySuccess"));
       navigate("/", { replace: true });
     } catch (error) {
-      toast.error(getApiErrorMessage(error, t("emailOtp.verifyError")));
+      const errorMessage = getApiErrorMessage(error, t("emailOtp.verifyError"));
+      const inlineErrorMessage = resolveOtpInlineError(errorMessage, t);
+      if (inlineErrorMessage) {
+        setVerifyInlineError(inlineErrorMessage);
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setIsVerifying(false);
     }
@@ -226,13 +259,24 @@ export default function EmailOtpVerifyPage() {
                     autoComplete="one-time-code"
                     maxLength={1}
                     value={digit}
+                    aria-invalid={Boolean(verifyInlineError)}
+                    aria-describedby={verifyInlineError ? "otp-verify-error" : undefined}
                     onPaste={handlePaste}
                     onKeyDown={(event) => handleDigitKeyDown(index, event)}
                     onChange={(event) => handleDigitChange(index, event.target.value)}
-                    className="h-12 w-12 rounded-xl border-2 border-slate-200 bg-white text-center text-2xl font-bold text-slate-900 caret-primary focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/20 sm:h-14 sm:w-14"
+                    className={`h-12 w-12 rounded-xl border-2 bg-white text-center text-2xl font-bold text-slate-900 caret-primary focus:outline-none focus:ring-4 sm:h-14 sm:w-14 ${
+                      verifyInlineError
+                        ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                        : "border-slate-200 focus:border-primary focus:ring-primary/20"
+                    }`}
                   />
                 ))}
               </div>
+              {verifyInlineError ? (
+                <p id="otp-verify-error" className="text-center text-sm font-medium text-red-600">
+                  {verifyInlineError}
+                </p>
+              ) : null}
 
               <div className="flex flex-col items-center gap-1.5 text-sm">
                 <p className="text-slate-500">
