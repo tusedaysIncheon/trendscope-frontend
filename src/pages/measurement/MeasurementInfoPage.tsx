@@ -12,7 +12,7 @@ import { SEO } from "@/shared/components/SEO";
 const HEIGHT_MIN_CM = 100;
 const HEIGHT_MAX_CM = 230;
 const WEIGHT_MIN_KG = 20;
-const WEIGHT_MAX_KG = 300;
+const WEIGHT_MAX_KG = 250;
 
 type MeasurementInfoRouteState = {
   measurementModel?: MeasurementModel;
