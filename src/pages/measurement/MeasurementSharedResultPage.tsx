@@ -70,8 +70,12 @@ export default function MeasurementSharedResultPage() {
   const navigate = useNavigate();
   const { shareToken } = useParams<{ shareToken: string }>();
   const { t } = useI18n();
+  const normalizedShareToken = useMemo(
+    () => shareToken?.trim().split(/\s+/)[0] ?? null,
+    [shareToken]
+  );
 
-  const { data, isLoading, isError } = useSharedAnalyzeJob(shareToken ?? null);
+  const { data, isLoading, isError } = useSharedAnalyzeJob(normalizedShareToken);
 
   const result = data?.result ?? null;
   const successResult = isSuccessAnalyzeResult(result) ? result : null;
@@ -95,11 +99,11 @@ export default function MeasurementSharedResultPage() {
       : null;
 
   const isInvalid = useMemo(() => {
-    if (!shareToken || isError || !data) return true;
+    if (!normalizedShareToken || isError || !data) return true;
     if (data.status !== "COMPLETED") return true;
     if (!successResult) return true;
     return false;
-  }, [data, isError, shareToken, successResult]);
+  }, [data, isError, normalizedShareToken, successResult]);
 
   if (isLoading) {
     return (

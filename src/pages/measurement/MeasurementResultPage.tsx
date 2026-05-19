@@ -523,15 +523,9 @@ export default function MeasurementResultPage() {
       return;
     }
 
-    const shareData = {
-      title: t("measureResult.title"),
-      text: t("measureResult.shareText"),
-      url: shareUrl,
-    };
-
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
-        await navigator.share(shareData);
+        await navigator.share({ url: shareUrl });
         toast.success(t("measureResult.shareSuccess"));
         return;
       } catch (error) {
